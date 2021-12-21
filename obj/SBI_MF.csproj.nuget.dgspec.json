@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\3184.NUCSOFT\\DotNetProjects\\SBI_MF\\SBI_MF.csproj": {}
+    "C:\\Users\\3184.NUCSOFT\\DotNetProjects\\SBI_MF\\SBI_MF.csproj": {}
   },
   "projects": {
-    "c:\\Users\\3184.NUCSOFT\\DotNetProjects\\SBI_MF\\SBI_MF.csproj": {
+    "C:\\Users\\3184.NUCSOFT\\DotNetProjects\\SBI_MF\\SBI_MF.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\3184.NUCSOFT\\DotNetProjects\\SBI_MF\\SBI_MF.csproj",
+        "projectUniqueName": "C:\\Users\\3184.NUCSOFT\\DotNetProjects\\SBI_MF\\SBI_MF.csproj",
         "projectName": "SBI_MF",
-        "projectPath": "c:\\Users\\3184.NUCSOFT\\DotNetProjects\\SBI_MF\\SBI_MF.csproj",
+        "projectPath": "C:\\Users\\3184.NUCSOFT\\DotNetProjects\\SBI_MF\\SBI_MF.csproj",
         "packagesPath": "C:\\Users\\3184.NUCSOFT\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\3184.NUCSOFT\\DotNetProjects\\SBI_MF\\obj\\",
+        "outputPath": "C:\\Users\\3184.NUCSOFT\\DotNetProjects\\SBI_MF\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\3184.NUCSOFT\\AppData\\Roaming\\NuGet\\NuGet.Config"
