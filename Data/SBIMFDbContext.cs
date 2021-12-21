@@ -1,3 +1,4 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SBI_MF.Models;
 
@@ -21,11 +22,33 @@ namespace SBI_MF.Data
             
         }
 
-        //  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        // {
-           
-        //     optionsBuilder.UseSqlServer("server=nucdbsrv;database=SBI_MF;user id=sa;password=nuc1234$");
-        // }
+        public SBIMFDbContext()
+        {
+        }
+
+         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+
+            optionsBuilder.UseSqlServer("server=nucdbsrv; database=SBI_MF; user id=sa; password=nuc1234$");
+        }
+
+
+        [DbFunction("fn_TransactionID", "dbo")]
+        public static string fn_getTransactionID()
+        {
+            string autoVal;
+            SBIMFDbContext dataContext = new SBIMFDbContext();
+            SqlParameter result = new SqlParameter("@result", System.Data.SqlDbType.VarChar, 50)
+            {
+                Direction = System.Data.ParameterDirection.Output
+            };
+            dataContext.Database.ExecuteSqlRaw("SELECT @result = (select dbo.fn_TransactionID())",result);
+            autoVal = result.Value.ToString();
+
+            return autoVal;
+            //throw new NotImplementedException();
+            //throw new NotSupportedException("Direct calls are not supported.");
+        }
     
     }
 }
