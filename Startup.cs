@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SBI_MF.Data;
+using Microsoft.OpenApi.Models;
 
 namespace SBI_MF
 {
@@ -27,6 +28,16 @@ namespace SBI_MF
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddMvc();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "My Awesome API",
+                    Version = "v1"
+                });
+            });
             services.AddControllers();
             services.AddDbContext<SBIMFDbContext>(options =>options.UseSqlServer(Configuration["ConnectionStrings:DefaultConnection"]));
         }
@@ -37,6 +48,11 @@ namespace SBI_MF
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Awesome API V1");
+                });
             }
 
             app.UseHttpsRedirection();
