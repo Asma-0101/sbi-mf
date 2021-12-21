@@ -22,11 +22,69 @@ namespace SBI_MF.Controllers
         }
 
         // GET: api/TransactionCapture
+//         [HttpGet]
+//         public async Task<ActionResult<IEnumerable<TransactionCaptureModel>>> GetTransactionCapture()
+//         {
+//             return await _context.TransactionCapture.ToListAsync();
+//         }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TransactionCaptureModel>>> GetTransactionCapture()
+        public IQueryable<TransactionCaptureDto> GetTransactionCaptureDto(String Task)
         {
-            return await _context.TransactionCapture.ToListAsync();
+
+            if (Task == "Maker")
+            {
+                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionStatus == "R")
+                select new TransactionCaptureDto()
+                    {
+                        TransactionId = t.TransactionId,
+                        TransactionDate = t.TransactionDate,
+                        SettlementTenor = t.SettlementTenor,
+                        ValueDate = t.ValueDate,
+                        Counterparty = t.Counterparty,
+                        SchemeName = t.SchemeName,
+                        Security = t.Security,
+                        SecurityLocation = t.SecurityLocation,
+                        DealValue = t.DealValue,
+                        QuantityInKg = t.QuantityInKg,
+                        NoOfUnitsPerKg = t.NoOfUnitsPerKg,
+                        TotalUnits = t.TotalUnits,
+                        TransactionStatus = t.TransactionStatus,
+                        TransactionType = t.TransactionType
+                    };
+                
+                return transaction;
+
+                // return await _context.TransactionCapture.ToListAsync();
+            }
+
+            else
+            {
+                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionStatus == "M" || b.TransactionStatus == "R")
+                                  select new TransactionCaptureDto()
+                                  {
+                                      TransactionId = t.TransactionId,
+                                      TransactionDate = t.TransactionDate,
+                                      SettlementTenor = t.SettlementTenor,
+                                      ValueDate = t.ValueDate,
+                                      Counterparty = t.Counterparty,
+                                      SchemeName = t.SchemeName,
+                                      Security = t.Security,
+                                      SecurityLocation = t.SecurityLocation,
+                                      DealValue = t.DealValue,
+                                      QuantityInKg = t.QuantityInKg,
+                                      NoOfUnitsPerKg = t.NoOfUnitsPerKg,
+                                      TotalUnits = t.TotalUnits,
+                                      TransactionStatus = t.TransactionStatus,
+                                      TransactionType = t.TransactionType
+
+                                  };
+                return transaction;
+             }
+            // return transaction;
+
         }
+
 
         // GET: api/TransactionCapture/5
         [HttpGet("{id}")]
