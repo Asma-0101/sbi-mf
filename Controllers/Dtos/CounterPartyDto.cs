@@ -48,7 +48,8 @@ namespace SBI_MF.Controllers.Dtos
         public string IFSC { get; set; }
         [Column(TypeName ="varchar(50)")]
         public string NameBeneficiary { get; set; }
-        public int AccountNo { get; set; }
+        [Column(TypeName ="numeric(18,0)")]
+        public float AccountNo { get; set; }
 
         public static CounterPartyDto FromCounterParty(CounterPartyModel counterParty)
         {
