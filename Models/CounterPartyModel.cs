@@ -48,11 +48,12 @@ namespace SBI_MF.Models
         public string IFSC { get; set; }
         [Column(TypeName ="varchar(50)")]
         public string NameBeneficiary { get; set; }
-        public int AccountNo { get; set; }
+        [Column(TypeName ="numeric(18,0)")]
+        public float AccountNo { get; set; }
 
         public CounterPartyModel(string counterPartyID, string counterpartyName, string pAN, string gSTNo, string address1, string address2, 
         string address3, string emailId1, string emailId2,string telNo1, string telNo2, string faxNo1, string faxNo2, string mobNo1, 
-        string mobNo2, string contactPerson, string bankName, string bankBranch, string iFSC, string nameBeneficiary, int accountNo)
+        string mobNo2, string contactPerson, string bankName, string bankBranch, string iFSC, string nameBeneficiary, float accountNo)
         {
             CounterPartyID = counterPartyID;
             CounterpartyName = counterpartyName;
