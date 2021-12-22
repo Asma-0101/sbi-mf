@@ -29,7 +29,9 @@ namespace SBI_MF
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddCors();
             services.AddMvc();
+            //services.AddDbContext<SBIMFDbContext>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -47,6 +49,13 @@ namespace SBI_MF
         {
             if (env.IsDevelopment())
             {
+            
+                app.UseCors(options => 
+                options.WithOrigins("http://localhost:4200")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                );
+    
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
