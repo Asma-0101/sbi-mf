@@ -58,6 +58,8 @@ namespace SBI_MF.Controllers
                                 CommodityPurity=c.CommodityPurity,
                                 CommodityDenomination=c.CommodityDenomination,
                                 ValuationRateType=c.ValuationRateType,
+                                Conversionfactor=c.Conversionfactor,
+                                VaultingAgent=c.VaultingAgent,
                                 CounterpartyShipper=c.CounterpartyShipper,
                                 Currency=c.Currency,
                                 Issuer=c.Issuer,
