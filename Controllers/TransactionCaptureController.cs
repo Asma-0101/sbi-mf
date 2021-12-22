@@ -23,11 +23,154 @@ namespace SBI_MF.Controllers
         }
 
         // GET: api/TransactionCapture
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<TransactionCaptureModel>>> GetTransactionCapture()
+//         [HttpGet]
+//         public async Task<ActionResult<IEnumerable<TransactionCaptureModel>>> GetTransactionCapture()
+//         {
+//             return await _context.TransactionCapture.ToListAsync();
+//         }
+
+// *******GET METHOD FOR TRANSACTION CAPTURE********
+
+ [HttpGet("SalesMaker")]
+        public IQueryable<TransactionCaptureDto> GetTransactionCaptureSM()
         {
-            return await _context.TransactionCapture.ToListAsync();
+            try
+            {
+                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionStatus == "R" && b.TransactionType == "S")
+                                  select new TransactionCaptureDto()
+                                  {
+                                      TransactionId = t.TransactionId,
+                                      TransactionDate = t.TransactionDate,
+                                      SettlementTenor = t.SettlementTenor,
+                                      ValueDate = t.ValueDate,
+                                      Counterparty = t.Counterparty,
+                                      SchemeName = t.SchemeName,
+                                      Security = t.Security,
+                                      SecurityLocation = t.SecurityLocation,
+                                      DealValue = t.DealValue,
+                                      QuantityInKg = t.QuantityInKg,
+                                      NoOfUnitsPerKg = t.NoOfUnitsPerKg,
+                                      TotalUnits = t.TotalUnits,
+                                      TransactionStatus = t.TransactionStatus,
+                                      TransactionType = t.TransactionType
+                                  };
+
+                return transaction;
+
+            }
+            catch
+            {
+                throw;
+            }
+
+
         }
+
+        [HttpGet("PurchaseMaker")]
+        public IQueryable<TransactionCaptureDto> GetTransactionCapturePM()
+        {
+            try
+            {
+                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionStatus == "R" && b.TransactionType == "P")
+                                  select new TransactionCaptureDto()
+                                  {
+                                      TransactionId = t.TransactionId,
+                                      TransactionDate = t.TransactionDate,
+                                      SettlementTenor = t.SettlementTenor,
+                                      ValueDate = t.ValueDate,
+                                      Counterparty = t.Counterparty,
+                                      SchemeName = t.SchemeName,
+                                      Security = t.Security,
+                                      SecurityLocation = t.SecurityLocation,
+                                      DealValue = t.DealValue,
+                                      QuantityInKg = t.QuantityInKg,
+                                      NoOfUnitsPerKg = t.NoOfUnitsPerKg,
+                                      TotalUnits = t.TotalUnits,
+                                      TransactionStatus = t.TransactionStatus,
+                                      TransactionType = t.TransactionType
+                                  };
+                return transaction;
+
+            }
+
+            catch
+            {
+                throw;
+            }
+        }
+
+
+        [HttpGet("SalesChecker")]
+        public IQueryable<TransactionCaptureDto> GetTransactionCaptureSC()
+        {
+            try
+            {
+                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionStatus == "M" || b.TransactionStatus == "N" && b.TransactionType == "S")
+                                  select new TransactionCaptureDto()
+                                  {
+                                      TransactionId = t.TransactionId,
+                                      TransactionDate = t.TransactionDate,
+                                      SettlementTenor = t.SettlementTenor,
+                                      ValueDate = t.ValueDate,
+                                      Counterparty = t.Counterparty,
+                                      SchemeName = t.SchemeName,
+                                      Security = t.Security,
+                                      SecurityLocation = t.SecurityLocation,
+                                      DealValue = t.DealValue,
+                                      QuantityInKg = t.QuantityInKg,
+                                      NoOfUnitsPerKg = t.NoOfUnitsPerKg,
+                                      TotalUnits = t.TotalUnits,
+                                      TransactionStatus = t.TransactionStatus,
+                                      TransactionType = t.TransactionType
+
+                                  };
+                return transaction;
+
+            }
+            catch
+            {
+                throw;
+            }
+
+        }
+
+        [HttpGet("PurchaseChecker")]
+        public IQueryable<TransactionCaptureDto> GetTransactionCapturePC()
+        {
+            try
+            {
+                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionStatus == "M" || b.TransactionStatus == "N" && b.TransactionType == "P")
+                                  select new TransactionCaptureDto()
+                                  {
+                                      TransactionId = t.TransactionId,
+                                      TransactionDate = t.TransactionDate,
+                                      SettlementTenor = t.SettlementTenor,
+                                      ValueDate = t.ValueDate,
+                                      Counterparty = t.Counterparty,
+                                      SchemeName = t.SchemeName,
+                                      Security = t.Security,
+                                      SecurityLocation = t.SecurityLocation,
+                                      DealValue = t.DealValue,
+                                      QuantityInKg = t.QuantityInKg,
+                                      NoOfUnitsPerKg = t.NoOfUnitsPerKg,
+                                      TotalUnits = t.TotalUnits,
+                                      TransactionStatus = t.TransactionStatus,
+                                      TransactionType = t.TransactionType
+
+                                  };
+                return transaction;
+
+            }
+            catch
+            {
+                throw;
+            }
+
+
+        }
+        
+        // *******GET METHOD FOR GOLD AND COUNTERPARTYMASTER********
+
 
         // GET: api/TransactionCapture/5
         [HttpGet("GoldMaster")]
@@ -41,17 +184,42 @@ namespace SBI_MF.Controllers
                             };
             
                 return securityLocation;
+        }
         
-            //var GoldModel = await _context.TransactionCapture.FindAsync(securityName);
+        [HttpGet("CounterParty")]
+        public IQueryable<CounterPartyDto> GetCounterPartyDto()
+        {
+            {
+                var transaction = from t in _context.CounterPartyMaster
+                                  select new CounterPartyDto()
+                                  {
+                                      CounterPartyID = t.CounterPartyID,
+                                      CounterpartyName = t.CounterpartyName,
+                                      PAN = t.PAN,
+                                      GSTNo = t.GSTNo,
+                                      Address1 = t.Address1,
+                                      Address2 = t.Address2,
+                                      Address3 = t.Address3,
+                                      EmailId1 = t.EmailId1,
+                                      EmailId2 = t.EmailId2,
+                                      TelNo1 = t.TelNo1,
+                                      TelNo2 = t.TelNo2,
+                                      FaxNo1 = t.FaxNo1,
+                                      FaxNo2 = t.FaxNo2,
+                                      MobNo1 = t.MobNo1,
+                                      MobNo2 = t.MobNo2,
+                                      ContactPerson = t.ContactPerson,
+                                      BankName = t.BankName,
+                                      BankBranch = t.BankBranch,
+                                      IFSC = t.IFSC,
+                                      NameBeneficiary = t.NameBeneficiary,
+                                      AccountNo = t.AccountNo
+                                  };
 
-            // if (securityLocation == null)
-            // {
-            //     return NotFound();
-            // }
-            // else{
-            // }
+                return transaction;
 
-            //return transactionCaptureModel;
+                // return await _context.TransactionCapture.ToListAsync();
+            }
         }
 
         // PUT: api/TransactionCapture/5
@@ -71,7 +239,7 @@ namespace SBI_MF.Controllers
             {
                 if (Task == "Authorize")
                 {
-                    if (transactionCaptureModel.TransactionStatus == "N")
+                    if (transactionCaptureModel.TransactionStatus == "N" && transactionCaptureModel.TransactionStatus == "M")
                     {
                         var dto = new TransactionCaptureDto()
                         {
@@ -81,7 +249,7 @@ namespace SBI_MF.Controllers
                 }
                 else if (Task == "Reject")
                 {
-                    if (transactionCaptureModel.TransactionStatus == "N")
+                    if (transactionCaptureModel.TransactionStatus == "N" && transactionCaptureModel.TransactionStatus == "M")
                     {
                         var dto = new TransactionCaptureDto()
                         {
@@ -106,7 +274,7 @@ namespace SBI_MF.Controllers
                             QuantityInKg = transactionCaptureModel.QuantityInKg,
                             NoOfUnitsPerKg = transactionCaptureModel.NoOfUnitsPerKg,
                             TotalUnits = transactionCaptureModel.TotalUnits,
-                            TransactionStatus = transactionCaptureModel.TransactionStatus = "N",
+                            TransactionStatus = transactionCaptureModel.TransactionStatus = "M",
                             TransactionType = transactionCaptureModel.TransactionType
                         };
                     }
