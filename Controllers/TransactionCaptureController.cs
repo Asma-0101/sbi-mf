@@ -105,7 +105,7 @@ namespace SBI_MF.Controllers
         {
             try
             {
-                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionStatus == "M" || b.TransactionStatus == "N" && b.TransactionType == "S")
+                var transaction = from t in _context.TransactionCapture.Where(b =>  b.TransactionType == "S" && (b.TransactionStatus == "M" || b.TransactionStatus == "N"))
                                   select new TransactionCaptureDto()
                                   {
                                       TransactionId = t.TransactionId,
@@ -139,7 +139,7 @@ namespace SBI_MF.Controllers
         {
             try
             {
-                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionStatus == "M" || b.TransactionStatus == "N" && b.TransactionType == "P")
+                var transaction = from t in _context.TransactionCapture.Where(b =>  b.TransactionType == "P" && (b.TransactionStatus == "M" || b.TransactionStatus == "N"))
                                   select new TransactionCaptureDto()
                                   {
                                       TransactionId = t.TransactionId,
