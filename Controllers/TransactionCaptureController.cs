@@ -415,10 +415,25 @@ namespace SBI_MF.Controllers
         [HttpPost]
         public async Task<ActionResult<TransactionCaptureModel>> PostTransactionCaptureModel(TransactionCaptureModel transactionCaptureModel)
         {
-            _context.TransactionCapture.Add(transactionCaptureModel);
             try
             {
-                await _context.SaveChangesAsync();
+                var data = new TransactionCaptureDto()
+                {
+                    TransactionId = transactionCaptureModel.TransactionId = SBIMFDbContext.fn_getTransactionID(),
+                    TransactionDate = transactionCaptureModel.TransactionDate,
+                    SettlementTenor = transactionCaptureModel.SettlementTenor,
+                    ValueDate = transactionCaptureModel.ValueDate,
+                    Counterparty = transactionCaptureModel.Counterparty,
+                    SchemeName = transactionCaptureModel.SchemeName,
+                    Security = transactionCaptureModel.Security,
+                    SecurityLocation = transactionCaptureModel.SecurityLocation,
+                    DealValue = transactionCaptureModel.DealValue,
+                    QuantityInKg = transactionCaptureModel.QuantityInKg,
+                    NoOfUnitsPerKg = transactionCaptureModel.NoOfUnitsPerKg,
+                    TotalUnits = transactionCaptureModel.TotalUnits,
+                    TransactionStatus = transactionCaptureModel.TransactionStatus = "N",
+                    TransactionType = transactionCaptureModel.TransactionType
+                };
             }
             catch (DbUpdateException)
             {
@@ -431,6 +446,8 @@ namespace SBI_MF.Controllers
                     throw;
                 }
             }
+            _context.TransactionCapture.Add(transactionCaptureModel);
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetTransactionCaptureModel", new { id = transactionCaptureModel.TransactionId }, transactionCaptureModel);
         }
