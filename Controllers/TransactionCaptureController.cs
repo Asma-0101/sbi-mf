@@ -23,15 +23,15 @@ namespace SBI_MF.Controllers
         }
 
         // GET: api/TransactionCapture
-//         [HttpGet]
-//         public async Task<ActionResult<IEnumerable<TransactionCaptureModel>>> GetTransactionCapture()
-//         {
-//             return await _context.TransactionCapture.ToListAsync();
-//         }
+        //         [HttpGet]
+        //         public async Task<ActionResult<IEnumerable<TransactionCaptureModel>>> GetTransactionCapture()
+        //         {
+        //             return await _context.TransactionCapture.ToListAsync();
+        //         }
 
-// *******GET METHOD FOR TRANSACTION CAPTURE********
+        // *******GET METHOD FOR TRANSACTION CAPTURE********
 
- [HttpGet("SalesMaker")]
+        [HttpGet("SalesMaker")]
         public IQueryable<TransactionCaptureDto> GetTransactionCaptureSM()
         {
             try
@@ -105,7 +105,7 @@ namespace SBI_MF.Controllers
         {
             try
             {
-                var transaction = from t in _context.TransactionCapture.Where(b =>  b.TransactionType == "S" && (b.TransactionStatus == "M" || b.TransactionStatus == "N"))
+                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionType == "S" && (b.TransactionStatus == "M" || b.TransactionStatus == "N"))
                                   select new TransactionCaptureDto()
                                   {
                                       TransactionId = t.TransactionId,
@@ -139,7 +139,7 @@ namespace SBI_MF.Controllers
         {
             try
             {
-                var transaction = from t in _context.TransactionCapture.Where(b =>  b.TransactionType == "P" && (b.TransactionStatus == "M" || b.TransactionStatus == "N"))
+                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionType == "P" && (b.TransactionStatus == "M" || b.TransactionStatus == "N"))
                                   select new TransactionCaptureDto()
                                   {
                                       TransactionId = t.TransactionId,
@@ -168,7 +168,7 @@ namespace SBI_MF.Controllers
 
 
         }
-        
+
         // *******GET METHOD FOR GOLD AND COUNTERPARTYMASTER********
 
 
@@ -176,16 +176,16 @@ namespace SBI_MF.Controllers
         [HttpGet("GoldMaster")]
         public IQueryable<GoldDto> GetTransactionCaptureModel(string securityName)
         {
-            var securityLocation = from c in _context.GoldMaster.Where(b => b.SecurityName == securityName )
-                            select new GoldDto()
-                            {
-                                SecurityLocation = c.SecurityLocation,
-                                NAVlot = c.NAVlot
-                            };
-            
-                return securityLocation;
+            var securityLocation = from c in _context.GoldMaster.Where(b => b.SecurityName == securityName)
+                                   select new GoldDto()
+                                   {
+                                       SecurityLocation = c.SecurityLocation,
+                                       NAVlot = c.NAVlot
+                                   };
+
+            return securityLocation;
         }
-        
+
         [HttpGet("CounterParty")]
         public IQueryable<CounterPartyDto> GetCounterPartyDto()
         {
@@ -239,17 +239,79 @@ namespace SBI_MF.Controllers
             {
                 if (Task == "Authorize")
                 {
-                    if (transactionCaptureModel.TransactionStatus == "N" && transactionCaptureModel.TransactionStatus == "M")
+                    if (transactionCaptureModel.TransactionStatus == "N" || transactionCaptureModel.TransactionStatus == "M")
                     {
                         var dto = new TransactionCaptureDto()
                         {
                             TransactionStatus = transactionCaptureModel.TransactionStatus = "A"
                         };
+
+                        await _context.SaveChangesAsync();
+
+
+                        CustodianInstructionModel custodianInstructionModel1 = new CustodianInstructionModel();
+                        TransactionCaptureModel transactionCaptureModel1 = new TransactionCaptureModel();
+                        CustodianModel custodianModel = new CustodianModel();
+                        GoldModel goldModel = new GoldModel();
+
+                        var data = new CustodianInstructionDto()
+                        {
+                            SecurityName = custodianInstructionModel1.SecurityName = transactionCaptureModel.Security,
+                            TradeDate = custodianInstructionModel1.TradeDate = transactionCaptureModel.TransactionDate,
+                            SettlementDate = custodianInstructionModel1.SettlementDate = transactionCaptureModel.ValueDate,
+                            Location = custodianInstructionModel1.Location = transactionCaptureModel.SecurityLocation,
+                            CounterParty = custodianInstructionModel1.CounterParty = transactionCaptureModel.Counterparty,
+                            QtyOfGoldBar = custodianInstructionModel1.QtyOfGoldBar = transactionCaptureModel.QuantityInKg,
+                            TransactionId = custodianInstructionModel1.TransactionId = transactionCaptureModel.TransactionId,
+                            CustodianInstructionId = custodianInstructionModel1.CustodianInstructionId = SBIMFDbContext.fn_getCustodianInstructionID(),
+                            Total = custodianInstructionModel1.Total = transactionCaptureModel.TotalUnits,
+                            DelRefNo = custodianInstructionModel1.DelRefNo = SBIMFDbContext.fn_getDealReference()                            
+                        };
+
+                        var custodianData = (from c in _context.CustodianMaster
+                                             join t in _context.TransactionCapture on c.Address3 equals t.SecurityLocation
+                                             where t.SecurityLocation == transactionCaptureModel.SecurityLocation
+                                             select new
+                                             {
+                                                 CustodianName = c.CustodianName,
+                                                 Address = c.Address1,
+                                                 ContactNo = c.MobileNumber1,
+                                                 ContactPerson = c.ContactPerson
+                                             }).ToList();
+
+                        foreach (var c1 in custodianData)
+                        {
+                            custodianInstructionModel1.CustodianName = c1.CustodianName;
+                            custodianInstructionModel1.Address = c1.Address;
+                            custodianInstructionModel1.ContactNo = c1.ContactNo;
+                            custodianInstructionModel1.ContactPerson = c1.ContactPerson;
+                            break;
+                        }
+
+                        var goldData = (from c in _context.TransactionCapture
+                                        join t in _context.GoldMaster on c.SecurityLocation equals t.SecurityLocation
+                                        where t.SecurityLocation == transactionCaptureModel.SecurityLocation
+                                        select new
+                                        {
+                                            BarWeightInGrams = t.BarWeightInGrams,
+                                            PurityOfGold = t.CommodityPurity,
+                                            VaultLocation = t.SecurityLocation
+                                        }).ToList();
+
+                        foreach (var c2 in goldData)
+                        {
+                            custodianInstructionModel1.WeightOfGoldBar = c2.BarWeightInGrams;
+                            custodianInstructionModel1.PurityOfGold = c2.PurityOfGold;
+                            custodianInstructionModel1.VaultLocation = c2.VaultLocation;
+                            break;
+                        }
+
+                        _context.CustodianInstruction.Add(custodianInstructionModel1);
                     }
                 }
                 else if (Task == "Reject")
                 {
-                    if (transactionCaptureModel.TransactionStatus == "N" && transactionCaptureModel.TransactionStatus == "M")
+                    if (transactionCaptureModel.TransactionStatus == "N" || transactionCaptureModel.TransactionStatus == "M")
                     {
                         var dto = new TransactionCaptureDto()
                         {
@@ -362,4 +424,6 @@ namespace SBI_MF.Controllers
         }
     }
 }
+
+
 
