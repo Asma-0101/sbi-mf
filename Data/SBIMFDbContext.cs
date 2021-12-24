@@ -18,15 +18,16 @@ namespace SBI_MF.Data
         public DbSet<ValuationModel> Valuation { get; set; }
         public DbSet<DealConfirmationModel> DealConfirmation { get; set; }
 
-        public SBIMFDbContext(DbContextOptions options) : base (options){
-            
+        public SBIMFDbContext(DbContextOptions options) : base(options)
+        {
+
         }
 
         public SBIMFDbContext()
         {
         }
 
-         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
             optionsBuilder.UseSqlServer("server=nucdbsrv; database=SBI_MF; user id=sa; password=nuc1234$");
@@ -42,13 +43,48 @@ namespace SBI_MF.Data
             {
                 Direction = System.Data.ParameterDirection.Output
             };
-            dataContext.Database.ExecuteSqlRaw("SELECT @result = (select dbo.fn_TransactionID())",result);
+            dataContext.Database.ExecuteSqlRaw("SELECT @result = (select dbo.fn_TransactionID())", result);
             autoVal = result.Value.ToString();
 
             return autoVal;
             //throw new NotImplementedException();
             //throw new NotSupportedException("Direct calls are not supported.");
         }
-    
+
+        [DbFunction("fn_CustodianInstructionID", "dbo")]
+        public static string fn_getCustodianInstructionID()
+        {
+            string autoVal;
+            SBIMFDbContext dataContext = new SBIMFDbContext();
+            SqlParameter result = new SqlParameter("@result", System.Data.SqlDbType.VarChar, 50)
+            {
+                Direction = System.Data.ParameterDirection.Output
+            };
+            dataContext.Database.ExecuteSqlRaw("SELECT @result = (select dbo.fn_CustodianInstructionID())", result);
+            autoVal = result.Value.ToString();
+
+            return autoVal;
+            //throw new NotImplementedException();
+            //throw new NotSupportedException("Direct calls are not supported.");
+        }
+
+        [DbFunction("fn_DealReference", "dbo")]
+        public static string fn_getDealReference()
+        {
+            string autoVal;
+            SBIMFDbContext dataContext = new SBIMFDbContext();
+            SqlParameter result = new SqlParameter("@result", System.Data.SqlDbType.VarChar, 50)
+            {
+                Direction = System.Data.ParameterDirection.Output
+            };
+            dataContext.Database.ExecuteSqlRaw("SELECT @result = (select dbo.fn_DealReference())", result);
+            autoVal = result.Value.ToString();
+
+            return autoVal;
+            //throw new NotImplementedException();
+            //throw new NotSupportedException("Direct calls are not supported.");
+        }
+
     }
 }
+
