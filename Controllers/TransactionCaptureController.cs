@@ -30,10 +30,46 @@ namespace SBI_MF.Controllers
         //         }
 
         // *******GET METHOD FOR TRANSACTION CAPTURE********
-        
-         [HttpGet("Checker")]
+
+        [HttpGet("Checker")]
+        public IQueryable<TransactionCaptureDto> GetTransactionCaptureC()
+        {
+            try
+            {
+                DateTime transaction_Date = DateTime.Now;
+                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionStatus == "A" && b.TransactionDate == transaction_Date)
+                                  select new TransactionCaptureDto()
+                                  {
+                                      TransactionId = t.TransactionId,
+                                      TransactionDate = t.TransactionDate,
+                                      SettlementTenor = t.SettlementTenor,
+                                      ValueDate = t.ValueDate,
+                                      Counterparty = t.Counterparty,
+                                      SchemeName = t.SchemeName,
+                                      Security = t.Security,
+                                      SecurityLocation = t.SecurityLocation,
+                                      DealValue = t.DealValue,
+                                      QuantityInKg = t.QuantityInKg,
+                                      NoOfUnitsPerKg = t.NoOfUnitsPerKg,
+                                      TotalUnits = t.TotalUnits,
+                                      TransactionStatus = t.TransactionStatus,
+                                      TransactionType = t.TransactionType
+                                  };
+
+                return transaction;
+
+            }
+            catch
+            {
+                throw;
+            }
+
+
+        }
+
+        [HttpGet("LocationGet")]
       
-        public IQueryable<TransactionCaptureDto> GetTransactionCaptureC(string security_Location)
+        public IQueryable<TransactionCaptureDto> GetTransactionCaptureLocation(string security_Location)
         {
             try
             {
@@ -68,7 +104,28 @@ namespace SBI_MF.Controllers
 
         }
 
+        [HttpGet("Location")]
+        public IQueryable<GoldDto> GetTransactionCaptureByLocation()
+        {
+            try
+            {
+                DateTime transaction_Date = DateTime.Now;
+                var transaction2 = from g in _context.GoldMaster
+                                       select new GoldDto()
+                                   {
+                                       SecurityLocation = g.SecurityLocation,
+                                   };
 
+                return transaction2;
+
+            }
+            catch
+            {
+                throw;
+            }
+
+
+        }
 
 
         [HttpGet("SalesMaker")]
@@ -464,6 +521,4 @@ namespace SBI_MF.Controllers
         }
     }
 }
-
-
 
