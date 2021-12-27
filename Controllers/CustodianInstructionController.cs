@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SBI_MF.Controllers.Dtos;
 using SBI_MF.Data;
 using SBI_MF.Models;
 
@@ -29,29 +30,70 @@ namespace SBI_MF.Controllers
         }
 
         // GET: api/CustodianInstruction/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CustodianInstructionModel>> GetCustodianInstructionModel(string id)
+        [HttpGet("SecurityLocation")]
+        public async Task<ActionResult<CustodianInstructionModel>> GetCustodianInstructionModel(string securitylocation)
         {
-            var custodianInstructionModel = await _context.CustodianInstruction.FindAsync(id);
-
-            if (custodianInstructionModel == null)
+           CustodianInstructionModel custodianInstructionModel = new CustodianInstructionModel();
+            try
             {
-                return NotFound();
+                if (custodianInstructionModel == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    var custodianInstruction = from t in _context.CustodianInstruction.Where(b => b.Location == securitylocation)
+                                               select new CustodianInstructionDto()
+                                               {
+                                                   CustodianName = t.CustodianName,
+                                                   Address = t.Address,
+                                                   ContactNo = t.ContactNo,
+                                                   ContactPerson = t.ContactPerson,
+                                                   SecurityName = t.SecurityName,
+                                                   TradeDate = t.TradeDate,
+                                                   SettlementDate = t.SettlementDate,
+                                                   WeightOfGoldBar = t.WeightOfGoldBar,
+                                                   PurityOfGold = t.PurityOfGold,
+                                                   Location = t.Location,
+                                                   VaultLocation = t.VaultLocation,
+                                                   CounterParty = t.CounterParty,
+                                                   DelRefNo = t.DelRefNo,
+                                                   QtyOfGoldBar = t.QtyOfGoldBar,
+                                                   Total = t.Total
+
+                                               };
+                    await _context.SaveChangesAsync();
+
+                    return Ok(custodianInstruction);
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CustodianInstructionModelExists(securitylocation))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
             }
 
-            return custodianInstructionModel;
+            //return custodianInstructionModel;
         }
 
         // PUT: api/CustodianInstruction/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustodianInstructionModel(string id, CustodianInstructionModel custodianInstructionModel)
+        public async Task<IActionResult> PutCustodianInstructionModel(string securityLocation, DateTime transactiondate, CustodianInstructionModel custodianInstructionModel)
         {
-            if (id != custodianInstructionModel.CustodianInstructionId)
+            if (securityLocation != custodianInstructionModel.Location)
             {
                 return BadRequest();
             }
+
+            TransactionCaptureModel transactionCaptureModel = new TransactionCaptureModel();
 
             _context.Entry(custodianInstructionModel).State = EntityState.Modified;
 
@@ -61,7 +103,7 @@ namespace SBI_MF.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CustodianInstructionModelExists(id))
+                if (!CustodianInstructionModelExists(securityLocation))
                 {
                     return NotFound();
                 }
