@@ -36,13 +36,14 @@ namespace SBI_MF.Controllers
            CustodianInstructionModel custodianInstructionModel = new CustodianInstructionModel();
             try
             {
-                if (custodianInstructionModel == null)
+                if (securitylocation == null)
                 {
                     return NotFound();
                 }
                 else
                 {
-                    var custodianInstruction = from t in _context.CustodianInstruction.Where(b => b.Location == securitylocation)
+                    DateTime transaction_Date = DateTime.Now;
+                    var custodianInstruction = from t in _context.CustodianInstruction.Where(b => b.Location == securitylocation && b.TradeDate == transaction_Date)
                                                select new CustodianInstructionDto()
                                                {
                                                    CustodianName = t.CustodianName,
@@ -164,3 +165,4 @@ namespace SBI_MF.Controllers
         }
     }
 }
+
