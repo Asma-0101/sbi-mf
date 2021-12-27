@@ -32,12 +32,13 @@ namespace SBI_MF.Controllers
         // *******GET METHOD FOR TRANSACTION CAPTURE********
         
          [HttpGet("Checker")]
-        public IQueryable<TransactionCaptureDto> GetTransactionCaptureC()
+      
+        public IQueryable<TransactionCaptureDto> GetTransactionCaptureC(string security_Location)
         {
             try
             {
                 DateTime transaction_Date = DateTime.Now;
-                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionStatus == "A" && b.TransactionDate == transaction_Date)
+                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionStatus == "A" && b.TransactionDate == transaction_Date && b.SecurityLocation == security_Location)
                                   select new TransactionCaptureDto()
                                   {
                                       TransactionId = t.TransactionId,
@@ -66,6 +67,7 @@ namespace SBI_MF.Controllers
 
 
         }
+
 
 
 
