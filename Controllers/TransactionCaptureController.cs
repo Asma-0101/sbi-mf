@@ -36,7 +36,8 @@ namespace SBI_MF.Controllers
         {
             try
             {
-                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionStatus == "A")
+                DateTime transaction_Date = DateTime.Now;
+                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionStatus == "A" && b.TransactionDate == transaction_Date)
                                   select new TransactionCaptureDto()
                                   {
                                       TransactionId = t.TransactionId,
@@ -65,6 +66,7 @@ namespace SBI_MF.Controllers
 
 
         }
+
 
 
         [HttpGet("SalesMaker")]
