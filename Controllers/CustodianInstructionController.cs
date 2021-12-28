@@ -28,6 +28,42 @@ namespace SBI_MF.Controllers
         {
             return await _context.CustodianInstruction.ToListAsync();
         }
+        
+        // Below generates an empty excel template of Custodian Instruction table
+        [HttpPost("Excel")]
+        public IActionResult Export()
+        {
+            DataTable dt = new DataTable("CustodianInstruction");
+            dt.Columns.AddRange(new DataColumn[17] { new DataColumn("CustodianInstructionId"),
+                                        new DataColumn("TransactionId"),
+                                        new DataColumn("CustodianName"),
+                                        new DataColumn("Address"),
+                                        new DataColumn("ContactNo"),
+                                        new DataColumn("ContactPerson"),
+                                        new DataColumn("SecurityName"),
+                                        new DataColumn("TradeDate"),
+                                        new DataColumn("SettlementDate"),
+                                        new DataColumn("WeightOfGoldBar"),
+                                        new DataColumn("PurityOfGold"),
+                                        new DataColumn("Location"),
+                                        new DataColumn("VaultLocation"),
+                                        new DataColumn("CounterParty"),
+                                        new DataColumn("DelRefNo"),
+                                        new DataColumn("QtyOfGoldBar"),
+                                        new DataColumn("Total")
+             });
+ 
+        using (XLWorkbook wb = new XLWorkbook())
+        {
+            wb.Worksheets.Add(dt);
+            using (MemoryStream stream = new MemoryStream())
+            {
+                wb.SaveAs(stream);
+                return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "CustodianInstruction.xlsx");
+            }
+        }
+    }
+    
 
         // GET: api/CustodianInstruction/5
         [HttpGet("SecurityLocation")]
