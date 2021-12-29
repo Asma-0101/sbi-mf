@@ -27,6 +27,154 @@ namespace SBI_MF.Controllers
         {
             return await _context.DealConfirmation.ToListAsync();
         }
+        
+        // GET: api/DealConfirmation
+        [HttpGet("GetSales")]
+        public IQueryable<DealConfirmationDto> GetSales()
+        {
+            // return await _context.DealConfirmation.ToListAsync();
+            try
+            {
+                var transaction = from t in _context.DealConfirmation.Where(b => b.DealStatus == "Incomplete" && b.TransactionType == "S")
+                                  select new DealConfirmationDto()
+                                  {
+                                      TransactionId = t.TransactionId,
+                                      DealConfirmId = t.DealConfirmId,
+                                      Name = t.Name,
+                                      Address = t.Address,
+                                      ContactNo = t.ContactNo,
+                                      ContactPersonName = t.ContactPersonName,
+                                      DealRefNo = t.DealRefNo,
+                                      ClientName = t.ClientName,
+                                      SchemeName = t.SchemeName,
+                                      TransactionType = t.TransactionType,
+                                      GSTNo = t.GSTNo,
+                                      DealDate = t.DealDate,
+                                      ValueDate = t.ValueDate,
+                                      Commodity = t.Commodity,
+                                      CounterpartyShipper = t.CounterpartyShipper,
+                                      QuantityInKilogram = t.QuantityInKilogram,
+                                      Rate = t.Rate,
+                                      TotalPrice = t.TotalPrice,
+                                      SGST = t.SGST,
+                                      CGST = t.CGST,
+                                      GST = t.GST,
+                                      TotalGST = t.TotalGST,
+                                      TotalConsideration = t.TotalConsideration,
+                                      OtherApplicableTaxes = t.OtherApplicableTaxes,
+                                      TaxCollectedAtSource = t.TaxCollectedAtSource,
+                                      NetConsideration = t.NetConsideration,
+                                      Remarks = t.Remarks,
+                                      BranchName = t.BranchName,
+                                      IFSCCode = t.IFSCCode,
+                                      BeneficiaryAccount = t.BeneficiaryAccount,
+                                      BeneficiaryAccountName = t.BeneficiaryAccountName,
+                                      DealStatus = t.DealStatus
+                                  };
+
+                return transaction;
+
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        [HttpGet("GetPurchase")]
+        public IQueryable<DealConfirmationDto> GetPurchase()
+        {
+            // return await _context.DealConfirmation.ToListAsync();
+            try
+            {
+                var transaction = from t in _context.DealConfirmation.Where(b => b.DealStatus == "Incomplete" && b.TransactionType == "P")
+                                  select new DealConfirmationDto()
+                                  {
+                                      TransactionId = t.TransactionId,
+                                      DealConfirmId = t.DealConfirmId,
+                                      Name = t.Name,
+                                      Address = t.Address,
+                                      ContactNo = t.ContactNo,
+                                      ContactPersonName = t.ContactPersonName,
+                                      DealRefNo = t.DealRefNo,
+                                      ClientName = t.ClientName,
+                                      SchemeName = t.SchemeName,
+                                      TransactionType = t.TransactionType,
+                                      GSTNo = t.GSTNo,
+                                      DealDate = t.DealDate,
+                                      ValueDate = t.ValueDate,
+                                      Commodity = t.Commodity,
+                                      CounterpartyShipper = t.CounterpartyShipper,
+                                      QuantityInKilogram = t.QuantityInKilogram,
+                                      Rate = t.Rate,
+                                      TotalPrice = t.TotalPrice,
+                                      SGST = t.SGST,
+                                      CGST = t.CGST,
+                                      GST = t.GST,
+                                      TotalGST = t.TotalGST,
+                                      TotalConsideration = t.TotalConsideration,
+                                      OtherApplicableTaxes = t.OtherApplicableTaxes,
+                                      TaxCollectedAtSource = t.TaxCollectedAtSource,
+                                      NetConsideration = t.NetConsideration,
+                                      Remarks = t.Remarks,
+                                      DealStatus = t.DealStatus
+                                  };
+
+                return transaction;
+
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+
+        [HttpGet("id")]
+
+        public IQueryable<DealConfirmationDto> GetbyDRN(string drn)
+        {
+            var transaction = from t in _context.DealConfirmation.Where(b => b.DealRefNo == drn && b.TransactionType == "S" && b.DealStatus == "Complete")
+                              select new DealConfirmationDto()
+                              {
+                                  TransactionId = t.TransactionId,
+                                  DealConfirmId = t.DealConfirmId,
+                                  Name = t.Name,
+                                  Address = t.Address,
+                                  ContactNo = t.ContactNo,
+                                  ContactPersonName = t.ContactPersonName,
+                                  DealRefNo = t.DealRefNo,
+                                  ClientName = t.ClientName,
+                                  SchemeName = t.SchemeName,
+                                  TransactionType = t.TransactionType,
+                                  GSTNo = t.GSTNo,
+                                  DealDate = t.DealDate,
+                                  ValueDate = t.ValueDate,
+                                  Commodity = t.Commodity,
+                                  CounterpartyShipper = t.CounterpartyShipper,
+                                  QuantityInKilogram = t.QuantityInKilogram,
+                                  Rate = t.Rate,
+                                  TotalPrice = t.TotalPrice,
+                                  SGST = t.SGST,
+                                  CGST = t.CGST,
+                                  GST = t.GST,
+                                  TotalGST = t.TotalGST,
+                                  TotalConsideration = t.TotalConsideration,
+                                  OtherApplicableTaxes = t.OtherApplicableTaxes,
+                                  TaxCollectedAtSource = t.TaxCollectedAtSource,
+                                  NetConsideration = t.NetConsideration,
+                                  Remarks = t.Remarks,
+                                  BranchName = t.BranchName,
+                                  IFSCCode = t.IFSCCode,
+                                  BeneficiaryAccount = t.BeneficiaryAccount,
+                                  BeneficiaryAccountName = t.BeneficiaryAccountName,
+                                  DealStatus = t.DealStatus
+
+                              };
+
+            return transaction;
+        }
+
 
         // GET: api/DealConfirmation/5
         [HttpGet("{id}")]
