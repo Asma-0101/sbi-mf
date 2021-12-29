@@ -193,19 +193,70 @@ namespace SBI_MF.Controllers
         // PUT: api/DealConfirmation/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+//         [HttpPut("{id}")]
+//         public async Task<IActionResult> PutDealConfirmationModel(string id, DealConfirmationModel dealConfirmationModel)
+//         {
+//             if (id != dealConfirmationModel.DealConfirmId)
+//             {
+//                 return BadRequest();
+//             }
+
+//             _context.Entry(dealConfirmationModel).State = EntityState.Modified;
+
+//             try
+//             {
+//                 await _context.SaveChangesAsync();
+//             }
+//             catch (DbUpdateConcurrencyException)
+//             {
+//                 if (!DealConfirmationModelExists(id))
+//                 {
+//                     return NotFound();
+//                 }
+//                 else
+//                 {
+//                     throw;
+//                 }
+//             }
+
+//             return NoContent();
+//         }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDealConfirmationModel(string id, DealConfirmationModel dealConfirmationModel)
+        
+        public async Task<IActionResult> ConfirmDeal(string id, DealConfirmationModel DealConfirmationModel, string Task)
         {
-            if (id != dealConfirmationModel.DealConfirmId)
+            if (id != DealConfirmationModel.TransactionId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(dealConfirmationModel).State = EntityState.Modified;
+            _context.Entry(DealConfirmationModel).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                if (Task == "Authorize")
+                {
+                    if (DealConfirmationModel.DealStatus == "Incomplete")
+                    {
+                        var dto = new DealConfirmationDto()
+                        {
+                            DealStatus = DealConfirmationModel.DealStatus = "Complete",
+
+                        };
+
+                        await _context.SaveChangesAsync();
+                    
+                        CustodianInstructionModel custodianInstructionModel1 = new CustodianInstructionModel();
+  
+                        var data = new DealConfirmationDto()
+                        {
+                            DealRefNo = DealConfirmationModel.DealRefNo = custodianInstructionModel1.DelRefNo 
+      
+                        };
+                    }
+                }
+
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -218,6 +269,7 @@ namespace SBI_MF.Controllers
                     throw;
                 }
             }
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
