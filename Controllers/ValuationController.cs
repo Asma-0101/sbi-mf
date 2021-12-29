@@ -27,6 +27,41 @@ namespace SBI_MF.Controllers
         {
             return await _context.Valuation.ToListAsync();
         }
+        
+        [HttpGet("Checker")]
+        public IQueryable<ValuationDto> GetValuationChecker()
+        {
+            try
+            {
+                var transaction = from t in _context.TestValuation.Where(b => b.TransactionStatus == "N")
+                                  select new ValuationDto()
+                                  {
+                                      ValuationId = t.ValuationId,
+                                      TransactionId = t.TransactionId,
+                                      Workflow = t.Workflow,
+                                      TransactionType = t.TransactionType,
+                                      LondonAMRateUSD = t.LondonAMRateUSD,
+                                      FixingChargesUSD = t.FixingChargesUSD,
+                                      PremiumUSD = t.PremiumUSD,
+                                      MetalRatePerkgINR =t.MetalRatePerkgINR,
+                                      ConversionFactor = t.ConversionFactor,
+                                      RBIReferenceRateINR = t.RBIReferenceRateINR,
+                                      MetalRateUSD = t.MetalRateUSD,
+                                      CustomsDutyKg = t.CustomsDutyKg,
+                                      StampDutyINR = t.StampDutyINR,
+                                      FinalPriceUSD = t.FinalPriceUSD,
+                                      TransactionStatus = t.TransactionStatus
+
+                                    };
+                return transaction;
+
+            }
+            catch
+            {
+                throw;
+            }
+
+        }
 
         // GET: api/Valuation/5
         [HttpGet("{id}")]
