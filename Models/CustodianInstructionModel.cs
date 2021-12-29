@@ -62,6 +62,11 @@ namespace SBI_MF.Models
             QtyOfGoldBar=qtyOfGoldBar;
             Total=total;
         }
+        
+        
+        public CustodianInstructionModel()
+        {
+        }
 
     }
 }
