@@ -110,8 +110,8 @@ namespace SBI_MF.Models
 
 
         [Required(ErrorMessage = "This field is required.")]
-        [Column(TypeName ="numeric(10,2)")]
-        public float Rate{get;set;}
+        [Column(TypeName ="varchar(15)")]
+        public string Rate{get;set;}
 
 
 
@@ -170,8 +170,8 @@ namespace SBI_MF.Models
 
 
         [Required(ErrorMessage = "This field is required.")]
-        [Column(TypeName ="varchar(250)")]
-        public string NetConsideration{get;set;}
+        [Column(TypeName ="numeric(10, 2)")]
+        public float NetConsideration{get;set;}
 
 
 
@@ -196,7 +196,7 @@ namespace SBI_MF.Models
         
 
         [Column(TypeName ="numeric(18,0)")] 	
-        public int BeneficiaryAccount{get;set;}
+        public float BeneficiaryAccount{get;set;}
 
 
 
@@ -212,7 +212,7 @@ namespace SBI_MF.Models
 
 
 
-        public DealConfirmationModel(string dealConfirmId,string transactionId,string name,string address,string contactNo,string contactPersonName,string dealRefNo,string clientName,string schemeName,string transactionType,string gSTNo,DateTime dealDate,DateTime valueDate,string commodity,string counterpartyShipper,float quantityInKilogram,float rate,float totalPrice,float sGST,float cGST,float gST,float totalGST,float totalConsideration,string otherApplicableTaxes,float taxCollectedAtSource,string netConsideration,string remarks,string branchName,string iFSCCode,int beneficiaryAccount,string beneficiaryAccountName,string dealStatus)
+        public DealConfirmationModel(string dealConfirmId,string transactionId,string name,string address,string contactNo,string contactPersonName,string dealRefNo,string clientName,string schemeName,string transactionType,string gSTNo,DateTime dealDate,DateTime valueDate,string commodity,string counterpartyShipper,float quantityInKilogram,string rate,float totalPrice,float sGST,float cGST,float gST,float totalGST,float totalConsideration,string otherApplicableTaxes,float taxCollectedAtSource,float netConsideration,string remarks,string branchName,string iFSCCode,float beneficiaryAccount,string beneficiaryAccountName,string dealStatus)
         {
         DealConfirmId=dealConfirmId;
         TransactionId=transactionId;
