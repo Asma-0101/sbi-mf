@@ -213,7 +213,7 @@ namespace SBI_MF.Controllers
 
 
         // GET: api/TransactionCapture/5
-        [HttpGet("GoldMaster")]
+        [HttpGet("SecurityDetails")]
         public IQueryable<GoldDto> GetTransactionCaptureModel(string securityName)
         {
             var securityLocation = from c in _context.GoldMaster.Where(b => b.SecurityName == securityName)
@@ -224,6 +224,43 @@ namespace SBI_MF.Controllers
                                    };
 
             return securityLocation;
+        }
+        
+        [HttpGet("GoldMaster")]
+        public IQueryable<GoldDto> GetGoldMaster()
+        {
+            var transaction = from c in _context.GoldMaster
+                            select new GoldDto()
+                            {
+                                GoldId=c.GoldId,
+                                SecurityName=c.SecurityName,
+                                Active=c.Active,
+                                SecurityLocation = c.SecurityLocation,
+                                Type=c.Type,
+                                BarWeightInKg=c.BarWeightInKg,
+                                BarWeightInGrams=c.BarWeightInGrams,
+                                CommodityPurity=c.CommodityPurity,
+                                CommodityDenomination=c.CommodityDenomination,
+                                ValuationRateType=c.ValuationRateType,
+                                Conversionfactor=c.Conversionfactor,
+                                VaultingAgent=c.VaultingAgent,
+                                CounterpartyShipper=c.CounterpartyShipper,
+                                Currency=c.Currency,
+                                Issuer=c.Issuer,
+                                StockExchange=c.StockExchange,
+                                Stampduty=c.Stampduty,
+                                Octroi=c.Octroi,
+                                Premium=c.Premium,
+                                CustomDuty=c.CustomDuty,
+                                FixingCharge=c.FixingCharge,
+                                SGST=c.SGST,
+                                CGST=c.CGST,
+                                GST=c.GST,
+                                NAVlot = c.NAVlot,
+                                Facevalue=c.Facevalue
+                            };
+            
+                return transaction;
         }
 
         [HttpGet("CounterParty")]
