@@ -20,28 +20,28 @@ namespace SBI_MF.Controllers.Dtos
 
         [Column(TypeName ="char(1)")]
         public string TransactionType{ get; set; }  
-        [Column(TypeName ="numeric(5,2)")]
-        public float LondonAMRateUSD{ get; set; } 
-        [Column(TypeName ="numeric(5,2)")] 	
-        public float FixingChargesUSD 	{ get; set; } 
+        [Column(TypeName ="varchar(15)")]
+        public string LondonAMRateUSD{ get; set; } 
+        [Column(TypeName ="varchar(15)")] 	
+        public string FixingChargesUSD 	{ get; set; } 
 
-        [Column(TypeName ="real")] 	
-        public int PremiumUSD 	{ get; set; }  
-        [Column(TypeName ="real")] 		
-        public int MetalRateUSD{ get; set; }
-        [Column(TypeName ="numeric(5,2)")] 	
-        public float  ConversionFactor { get; set; } 
-        [ Column(TypeName ="numeric(5,2)")] 	
-        public float RBIReferenceRateINR { get; set; }
-        [Column(TypeName ="numeric(5,2)")] 	
+        [Column(TypeName ="varchar(15)")] 	
+        public string PremiumUSD 	{ get; set; }  
+        [Column(TypeName ="varchar(15)")] 		
+        public string MetalRateUSD{ get; set; }
+        [Column(TypeName ="varchar(15)")] 	
+        public string  ConversionFactor { get; set; } 
+        [ Column(TypeName ="varchar(15)")] 	
+        public string RBIReferenceRateINR { get; set; }
+        [Column(TypeName ="varchar(15)")] 	
         public int MetalRatePerkgINR { get; set; } 
 
-        [Column(TypeName ="numeric(5,2)")] 	
-        public float CustomsDutyKg { get; set; } 
-        [Column(TypeName ="numeric(5,2)")] 	
-        public float  StampDutyINR { get; set; } 
-        [Column(TypeName ="numeric(5,2)")] 	
-        public float  FinalPriceUSD { get; set; }  
+        [Column(TypeName ="varchar(15)")] 	
+        public string CustomsDutyKg { get; set; } 
+        [Column(TypeName ="varchar(15)")] 	
+        public string  StampDutyINR { get; set; } 
+        [Column(TypeName ="varchar(15)")] 	
+        public string  FinalPriceUSD { get; set; }  
 
         [Column(TypeName ="char(1)")] 	
         public string TransactionStatus	{ get; set; } 
