@@ -15,7 +15,7 @@ namespace SBI_MF.Data
         public DbSet<TaxesModel> TaxMaster { get; set; }
         public DbSet<TransactionCaptureModel> TransactionCapture { get; set; }
         public DbSet<CustodianInstructionModel> CustodianInstruction { get; set; }
-        public DbSet<ValuationModel> Valuation { get; set; }
+        public DbSet<ValuationModel> TestValuation { get; set; }
         public DbSet<DealConfirmationModel> DealConfirmation { get; set; }
 
         public SBIMFDbContext(DbContextOptions options) : base(options)
