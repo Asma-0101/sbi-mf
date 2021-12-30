@@ -51,7 +51,8 @@ namespace SBI_MF.Controllers.Dtos
         public string CounterpartyShipper{get;set;}
         [Column(TypeName ="numeric(10,2)")] 	
         public float QuantityInKilogram{get;set;}
-        public float Rate{get;set;}
+        [Column(TypeName ="varchar(15)")] 
+        public string Rate{get;set;}
         [Column(TypeName ="numeric(10,2)")] 	
         public float TotalPrice{get;set;}
         [Column(TypeName ="numeric(10,2)")] 	            
@@ -71,8 +72,8 @@ namespace SBI_MF.Controllers.Dtos
 
         [Column(TypeName ="numeric(10,2)")] 	
         public float TaxCollectedAtSource{get;set;}
-        [Column(TypeName ="varchar(250)")]
-        public string NetConsideration{get;set;}
+        [Column(TypeName ="numeric(10, 2)")]
+        public float NetConsideration{get;set;}
 
         [Column(TypeName ="varchar(250)")]
         public string Remarks{get;set;}
@@ -81,8 +82,8 @@ namespace SBI_MF.Controllers.Dtos
         [Column(TypeName ="varchar(50)")]
         public string IFSCCode{get;set;}
 
-        [Column(TypeName ="int")] 	
-        public int BeneficiaryAccount{get;set;}
+        [Column(TypeName ="numeric(18, 0)")] 	
+        public float BeneficiaryAccount{get;set;}
         [Column(TypeName ="varchar(50)")]
         public string BeneficiaryAccountName{get;set;}
         [Column(TypeName ="varchar(50)")]
