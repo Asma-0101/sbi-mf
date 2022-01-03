@@ -169,7 +169,6 @@ namespace SBI_MF.Controllers
             }          
             
         }
-
         // DELETE: api/Valuation/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<ValuationModel>> DeleteValuationModel(string id)
