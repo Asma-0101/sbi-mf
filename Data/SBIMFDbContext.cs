@@ -85,6 +85,41 @@ namespace SBI_MF.Data
             //throw new NotSupportedException("Direct calls are not supported.");
         }
 
+         [DbFunction("fn_DealConfirmID", "dbo")]
+        public static string fn_DealConfirmID()
+        {
+            string autoVal;
+            SBIMFDbContext dataContext = new SBIMFDbContext();
+            SqlParameter result = new SqlParameter("@result", System.Data.SqlDbType.VarChar, 50)
+            {
+                Direction = System.Data.ParameterDirection.Output
+            };
+            dataContext.Database.ExecuteSqlRaw("SELECT @result = (select dbo.fn_DealConfirmID())", result);
+            autoVal = result.Value.ToString();
+
+            return autoVal;
+            //throw new NotImplementedException();
+            //throw new NotSupportedException("Direct calls are not supported.");
+        }
+
+         [DbFunction("fn_ValuationIDs", "dbo")]
+        public static string fn_getValuationIDs()
+        {
+            string autoVal;
+            SBIMFDbContext dataContext = new SBIMFDbContext();
+            SqlParameter result = new SqlParameter("@result", System.Data.SqlDbType.VarChar, 50)
+            {
+                Direction = System.Data.ParameterDirection.Output
+            };
+            dataContext.Database.ExecuteSqlRaw("SELECT @result = (select dbo.fn_ValuationIDs())", result);
+            autoVal = result.Value.ToString();
+
+            return autoVal;
+            //throw new NotImplementedException();
+            //throw new NotSupportedException("Direct calls are not supported.");
+        }
+
     }
 }
+
 
