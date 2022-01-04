@@ -1,9 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using ExcelDataReader;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SBI_MF.Controllers.Dtos;
 using SBI_MF.Data;
@@ -76,20 +81,9 @@ namespace SBI_MF.Controllers
                            CounterPartyModel counterPartyModel1 = new CounterPartyModel();
                            CustodianInstructionModel custodianInstructionModel1 = new CustodianInstructionModel();
                            GoldModel goldModel1 = new GoldModel();
-                        // ValuationModel valuationModel1 = new ValuationModel();
                            TaxesModel taxesModel1 = new TaxesModel();
 
-                    //  var data = new DealConfirmationDto()
-                    //  {
-                    //     DealConfirmId = DealConfirmationModel1.DealConfirmId = SBIMFDbContext.fn_DealConfirmID(),
-                    //     TransactionId = DealConfirmationModel1.TransactionId = valuationModel.TransactionId,
-                    //     DealRefNo = DealConfirmationModel1.DealRefNo = "",
-                    //     ClientName = DealConfirmationModel1.ClientName = "SBI-MUTUAL-FUND",
-                    //     Rate = DealConfirmationModel1.Rate = 0,
-                    //     Remarks = DealConfirmationModel1.Remarks = "",
-                    //     DealStatus = DealConfirmationModel1.DealStatus = "Incomplete",
-
-                    //  };
+                 
 
                     var Transdata = (from c in _context.TransactionCapture
                                     where  c.TransactionId== valuationModel.TransactionId
@@ -245,42 +239,6 @@ namespace SBI_MF.Controllers
 
                         _context.DealConfirmation.Add(DealConfirmationModel1);
 
-
-
-
-
-                        // Name = DealConfirmationModel1.Name = counterPartyModel1.CounterpartyName,
-                        // Address = DealConfirmationModel1.Address = counterPartyModel1.Address1,
-                        // ContactNo = DealConfirmationModel1.ContactNo = counterPartyModel1.MobNo1,
-                        // ContactPersonName = DealConfirmationModel1.ContactPersonName = counterPartyModel1.ContactPerson,
-                        // DealRefNo = DealConfirmationModel1.DealRefNo =  custodianInstructionModel1.DelRefNo,
-                        // ClientName = DealConfirmationModel1.ClientName = "SBI-MUTUAL-FUND",
-                        // SchemeName = DealConfirmationModel1.SchemeName = TransactionCaptureModel1.SchemeName,
-                        // TransactionType = DealConfirmationModel1.TransactionType = TransactionCaptureModel1.TransactionType,
-                        // GSTNo = DealConfirmationModel1.GSTNo = counterPartyModel1.GSTNo,
-                        // DealDate = DealConfirmationModel1.DealDate = TransactionCaptureModel1.TransactionDate,
-                        // ValueDate = DealConfirmationModel1.ValueDate = TransactionCaptureModel1.ValueDate,
-                        // Commodity = DealConfirmationModel1.Commodity = goldModel1.CommodityPurity + goldModel1.CommodityDenomination,
-                        // CounterpartyShipper = DealConfirmationModel1.CounterpartyShipper = goldModel1.CounterpartyShipper,
-                        // QuantityInKilogram = DealConfirmationModel1.QuantityInKilogram = TransactionCaptureModel1.QuantityInKg,
-                        // Rate = DealConfirmationModel1.Rate = valuationModel1.FinalPriceUSD,
-                        // TotalPrice = DealConfirmationModel1.TotalPrice = DealConfirmationModel1.QuantityInKilogram * DealConfirmationModel1.Rate,
-                        // SGST = DealConfirmationModel1.SGST = taxesModel1.SGST * DealConfirmationModel1.TotalPrice,
-                        // CGST = DealConfirmationModel1.CGST = taxesModel1.CGST * DealConfirmationModel1.TotalPrice,
-                        // GST = DealConfirmationModel1.GST = taxesModel1.GST * DealConfirmationModel1.TotalPrice,
-                        // TotalGST = DealConfirmationModel1.TotalGST = DealConfirmationModel1.SGST + DealConfirmationModel1.CGST + DealConfirmationModel1.GST,
-                        // TotalConsideration = DealConfirmationModel1.TotalConsideration = DealConfirmationModel1.TotalPrice + DealConfirmationModel1.TotalGST,
-                        // OtherApplicableTaxes = DealConfirmationModel1.OtherApplicableTaxes = "",
-                        // TaxCollectedAtSource = DealConfirmationModel1.TaxCollectedAtSource = DealConfirmationModel1.TotalConsideration,
-                        // NetConsideration = DealConfirmationModel1.NetConsideration =DealConfirmationModel1.TotalConsideration + DealConfirmationModel1.TaxCollectedAtSource,
-                        // Remarks = DealConfirmationModel1.Remarks = "",
-                        // BranchName = DealConfirmationModel1.BranchName = counterPartyModel1.BankBranch,
-                        // IFSCCode = DealConfirmationModel1.IFSCCode = counterPartyModel1.IFSC,
-                        // BeneficiaryAccount = DealConfirmationModel1.BeneficiaryAccount = counterPartyModel1.AccountNo,
-                        // BeneficiaryAccountName = DealConfirmationModel1.BeneficiaryAccountName = counterPartyModel1.NameBeneficiary,
-                        // DealStatus = DealConfirmationModel1.DealStatus = ""
-
-
                         await _context.SaveChangesAsync();
                         
                         
@@ -288,6 +246,19 @@ namespace SBI_MF.Controllers
                     
                     
                 }
+
+            else if(Task == "Reject")
+            {
+                if (valuationModel.TransactionStatus == "N")
+                {
+                   var dto = new TransactionCaptureDto()
+                   {
+                     TransactionStatus = valuationModel.TransactionStatus = "R"
+                   };
+                }
+
+                 await _context.SaveChangesAsync();
+            }
 
               
             }
@@ -309,7 +280,82 @@ namespace SBI_MF.Controllers
         // POST: api/Valuation
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-      
+
+          [HttpPost("test")]
+        public async Task<List<ValuationModel>> uploadExcel(IFormFile file1)
+        {
+            try
+            { 
+            var chargeData=new List<ValuationModel>();
+            var fileList=HttpContext.Request.Form.Files;
+            DataSet dsexcelRecords = new DataSet();
+            IExcelDataReader reader = null;
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            if(fileList!=null)
+            {
+            using(var fs=new MemoryStream())
+            {
+               foreach(var file in fileList)
+            {
+                await file.CopyToAsync(fs);
+            }
+                
+                using (reader = ExcelReaderFactory.CreateReader(fs))
+                {
+                    dsexcelRecords = reader.AsDataSet();
+                    //if(reader.RowCount>1)
+                     if (dsexcelRecords != null && dsexcelRecords.Tables.Count > 0)
+                    {            
+                        DataTable dtStudentRecords = dsexcelRecords.Tables[0];
+                                //while (reader.Read()) 
+                                using (SqlConnection con = new SqlConnection("server=NUCDBSRV;database=SBI_MF;user id=sa;password=nuc1234$;"))
+
+                                {
+                                    for (int i = 1; i < dtStudentRecords.Rows.Count; i++)
+
+                                    {
+                                        SqlCommand cmd = new SqlCommand("ValuationInsert", con);
+                                        cmd.CommandType = CommandType.StoredProcedure;                                
+                                        cmd.Parameters.AddWithValue("@ValuationId",dtStudentRecords.Rows[i][0]);
+                                        cmd.Parameters.AddWithValue("@TransactionId",dtStudentRecords.Rows[i][1]);
+                                        cmd.Parameters.AddWithValue("@Workflow",dtStudentRecords.Rows[i][2]);
+                                        cmd.Parameters.AddWithValue("@TransactionType",dtStudentRecords.Rows[i][3]);
+                                        cmd.Parameters.AddWithValue("@LondonAMRateUSD",dtStudentRecords.Rows[i][4]);
+                                        cmd.Parameters.AddWithValue("@FixingChargesUSD",dtStudentRecords.Rows[i][5]);
+                                        cmd.Parameters.AddWithValue("@PremiumUSD",dtStudentRecords.Rows[i][6]);
+                                        cmd.Parameters.AddWithValue("@MetalRateUSD",dtStudentRecords.Rows[i][7]);
+                                        cmd.Parameters.AddWithValue("@ConversionFactor",dtStudentRecords.Rows[i][8]);
+                                        cmd.Parameters.AddWithValue("@RBIReferenceRateINR",dtStudentRecords.Rows[i][9]);
+                                        cmd.Parameters.AddWithValue("@MetalRatePerkgINR",dtStudentRecords.Rows[i][10]);
+                                        cmd.Parameters.AddWithValue("@CustomsDutyKg",dtStudentRecords.Rows[i][11]);
+                                        cmd.Parameters.AddWithValue("@StampDutyINR",dtStudentRecords.Rows[i][12]);
+                                        cmd.Parameters.AddWithValue("@FinalPriceUSD",dtStudentRecords.Rows[i][13]);
+                                        cmd.Parameters.AddWithValue("@TransactionStatus",dtStudentRecords.Rows[i][14]);
+                                        
+                                        con.Open();                                
+                                        cmd.ExecuteNonQuery(); 
+                                        con.Close();
+                                    } 
+                                        
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Empty File!");
+                    }
+                }
+             
+            } 
+            }           
+            return chargeData;
+            }
+            catch(Exception)
+            {
+                throw;
+            }          
+            
+        }
+
        [HttpPost]
         public async Task<ActionResult<ValuationModel>> PostValuationModel(IFormFile file)
         {
@@ -357,6 +403,11 @@ namespace SBI_MF.Controllers
                     {
                         file.CopyTo(stream);
                     }
+                  
+                    // var estEncoding = Encoding.GetEncoding(1252);
+                    //     var est= File.ReadAllText(filePath, estEncoding);       
+                    //     var utf = Encoding.UTF8;
+                    //     est = utf.GetString(Encoding.Convert(estEncoding, utf, estEncoding.GetBytes(est)));
 
                        
                     if(fileExt == ".xls")
@@ -378,8 +429,9 @@ namespace SBI_MF.Controllers
                     if(dsExcelData != null && dsExcelData.Tables.Count > 0)
                     {
                         DataTable dtEmp = new DataTable();
-                        dtEmp=dsExcelData.Tables[0].Clone();
+                        // dtEmp=dsExcelData.Tables[0].Clone();
                         dtEmp=dsExcelData.Tables[0];
+
                         if(dtEmp!=null)
                         {
                         ValuationModel objEmp = new ValuationModel(); 
@@ -403,55 +455,21 @@ namespace SBI_MF.Controllers
                             objEmp.FinalPriceUSD =  (dtEmp.Rows[i][13].ToString().Trim());
                             objEmp.TransactionStatus = "N";
 
+                            _context.TestValuation.Add(objEmp);
+                                await _context.SaveChangesAsync();
 
-                            valuationModel.ValuationId=objEmp.ValuationId;
-                            valuationModel.TransactionId=objEmp.TransactionId;
-                            valuationModel.Workflow=objEmp.Workflow;
-                            valuationModel.TransactionType=objEmp.TransactionType;
-                            valuationModel.LondonAMRateUSD=objEmp.LondonAMRateUSD;
-                            valuationModel.FixingChargesUSD=objEmp.FixingChargesUSD;
-                            valuationModel.PremiumUSD=objEmp.PremiumUSD;
-                            valuationModel.MetalRateUSD=objEmp.MetalRateUSD;
-                            valuationModel.ConversionFactor=objEmp.ConversionFactor;
-                            valuationModel.RBIReferenceRateINR=objEmp.RBIReferenceRateINR;
-                            valuationModel.MetalRatePerkgINR=objEmp.MetalRatePerkgINR;
-                            valuationModel.CustomsDutyKg=objEmp.CustomsDutyKg;
-                            valuationModel.StampDutyINR=objEmp.StampDutyINR;
-                            valuationModel.FinalPriceUSD=objEmp.FinalPriceUSD;
-                            valuationModel.TransactionStatus=objEmp.TransactionStatus;
-                          
                         }
 
-                        
-                          var dto1 = new ValuationDto()       
-                        {
-                            ValuationId = valuationModel.ValuationId,
-                            TransactionId =valuationModel.TransactionId,
-                            Workflow =valuationModel.Workflow,
-                            TransactionType=valuationModel.TransactionType,
-                            LondonAMRateUSD =valuationModel.LondonAMRateUSD,
-                            FixingChargesUSD =valuationModel.FixingChargesUSD,
-                            PremiumUSD =valuationModel.PremiumUSD,
-                            MetalRateUSD =valuationModel.MetalRateUSD,
-                            ConversionFactor =valuationModel.ConversionFactor,
-                            RBIReferenceRateINR =valuationModel.RBIReferenceRateINR,
-                            MetalRatePerkgINR =valuationModel.MetalRatePerkgINR,
-                            CustomsDutyKg =valuationModel.CustomsDutyKg,
-                            StampDutyINR =valuationModel.StampDutyINR,
-                            FinalPriceUSD =valuationModel.FinalPriceUSD,
-                            TransactionStatus =valuationModel.TransactionStatus,
-                        };  
-                              
-
+                               
                         }
                
                     }
                 }
               
             }
-            _context.TestValuation.Add(valuationModel);
-              await _context.SaveChangesAsync();
-
+                        
+                       
+            return Ok();
             }
             catch (Exception)
             {
@@ -464,8 +482,7 @@ namespace SBI_MF.Controllers
                     throw;
                 }
             }
-              await _context.SaveChangesAsync();
-              return CreatedAtAction("GetValuationModel", new { id = valuationModel.ValuationId }, valuationModel);
+             
         }
 
         // DELETE: api/Valuation/5
