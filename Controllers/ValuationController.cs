@@ -309,15 +309,151 @@ namespace SBI_MF.Controllers
         // POST: api/Valuation
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPost]
-        public async Task<ActionResult<ValuationModel>> PostValuationModel(ValuationModel valuationModel)
+      
+       [HttpPost]
+        public async Task<ActionResult<ValuationModel>> PostValuationModel(IFormFile file)
         {
-            _context.TestValuation.Add(valuationModel);
+            ValuationModel valuationModel=new ValuationModel();
             try
             {
-                await _context.SaveChangesAsync();
+               
+                string message="";
+                IExcelDataReader reader = null;  
+                var valuationData=new List<ValuationModel>();
+                var fileList=HttpContext.Request.Form.Files;
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                // Stream FileStreams = null; 
+                string fileExt = System.IO.Path.GetExtension(file.FileName).ToLower(); 
+                DataSet dsExcelData = new DataSet();
+        
+             
+                if(file != null)
+                {
+                    //FileStream.Position=1;
+                    //FileStreams=file.OpenReadStream();
+                    using(var fs=new MemoryStream())
+                    {
+               
+                        foreach(var files in fileList)
+                        {
+                            await files.CopyToAsync(fs);
+                        }
+            
+                    
+                    string path=Path.Combine(Directory.GetCurrentDirectory(),"Uploads");
+                    
+                    
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+
+                    string fileName = Path.GetFileName(file.FileName);
+                    
+                    string filePath = Path.Combine(path, fileName);
+                        
+                    
+                    using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+
+                       
+                    if(fileExt == ".xls")
+                    {
+                        reader = ExcelReaderFactory.CreateBinaryReader(fs);
+                    }
+                    else if(fileExt == ".xlsx")
+                    {
+                        reader = ExcelReaderFactory.CreateOpenXmlReader(fs);  
+                    }
+                    else  
+                    {
+                        message = "The file format is not supported.";  
+                    }
+
+                    dsExcelData = reader.AsDataSet();  
+                    reader.Close(); 
+
+                    if(dsExcelData != null && dsExcelData.Tables.Count > 0)
+                    {
+                        DataTable dtEmp = new DataTable();
+                        dtEmp=dsExcelData.Tables[0].Clone();
+                        dtEmp=dsExcelData.Tables[0];
+                        if(dtEmp!=null)
+                        {
+                        ValuationModel objEmp = new ValuationModel(); 
+                        for(int i = 1; i < dtEmp.Rows.Count; i++)
+                        {
+                           
+                         
+                            objEmp.ValuationId =SBIMFDbContext.fn_getValuationIDs();
+                            objEmp.TransactionId = (dtEmp.Rows[i][1].ToString().Trim());
+                            objEmp.Workflow =  (dtEmp.Rows[i][2].ToString().Trim());
+                            objEmp.TransactionType =  (dtEmp.Rows[i][3].ToString().Trim());
+                            objEmp.LondonAMRateUSD =  (dtEmp.Rows[i][4].ToString().Trim());
+                            objEmp.FixingChargesUSD = (dtEmp.Rows[i][5].ToString().Trim());
+                            objEmp.PremiumUSD =   (dtEmp.Rows[i][6].ToString().Trim());
+                            objEmp.MetalRateUSD = (dtEmp.Rows[i][7].ToString().Trim());
+                            objEmp.ConversionFactor =  (dtEmp.Rows[i][8].ToString().Trim());
+                            objEmp.RBIReferenceRateINR =  (dtEmp.Rows[i][9].ToString().Trim());
+                            objEmp.MetalRatePerkgINR = (dtEmp.Rows[i][10].ToString().Trim());
+                            objEmp.CustomsDutyKg = (dtEmp.Rows[i][11].ToString().Trim());
+                            objEmp.StampDutyINR =  (dtEmp.Rows[i][12].ToString().Trim());
+                            objEmp.FinalPriceUSD =  (dtEmp.Rows[i][13].ToString().Trim());
+                            objEmp.TransactionStatus = "N";
+
+
+                            valuationModel.ValuationId=objEmp.ValuationId;
+                            valuationModel.TransactionId=objEmp.TransactionId;
+                            valuationModel.Workflow=objEmp.Workflow;
+                            valuationModel.TransactionType=objEmp.TransactionType;
+                            valuationModel.LondonAMRateUSD=objEmp.LondonAMRateUSD;
+                            valuationModel.FixingChargesUSD=objEmp.FixingChargesUSD;
+                            valuationModel.PremiumUSD=objEmp.PremiumUSD;
+                            valuationModel.MetalRateUSD=objEmp.MetalRateUSD;
+                            valuationModel.ConversionFactor=objEmp.ConversionFactor;
+                            valuationModel.RBIReferenceRateINR=objEmp.RBIReferenceRateINR;
+                            valuationModel.MetalRatePerkgINR=objEmp.MetalRatePerkgINR;
+                            valuationModel.CustomsDutyKg=objEmp.CustomsDutyKg;
+                            valuationModel.StampDutyINR=objEmp.StampDutyINR;
+                            valuationModel.FinalPriceUSD=objEmp.FinalPriceUSD;
+                            valuationModel.TransactionStatus=objEmp.TransactionStatus;
+                          
+                        }
+
+                        
+                          var dto1 = new ValuationDto()       
+                        {
+                            ValuationId = valuationModel.ValuationId,
+                            TransactionId =valuationModel.TransactionId,
+                            Workflow =valuationModel.Workflow,
+                            TransactionType=valuationModel.TransactionType,
+                            LondonAMRateUSD =valuationModel.LondonAMRateUSD,
+                            FixingChargesUSD =valuationModel.FixingChargesUSD,
+                            PremiumUSD =valuationModel.PremiumUSD,
+                            MetalRateUSD =valuationModel.MetalRateUSD,
+                            ConversionFactor =valuationModel.ConversionFactor,
+                            RBIReferenceRateINR =valuationModel.RBIReferenceRateINR,
+                            MetalRatePerkgINR =valuationModel.MetalRatePerkgINR,
+                            CustomsDutyKg =valuationModel.CustomsDutyKg,
+                            StampDutyINR =valuationModel.StampDutyINR,
+                            FinalPriceUSD =valuationModel.FinalPriceUSD,
+                            TransactionStatus =valuationModel.TransactionStatus,
+                        };  
+                              
+
+                        }
+               
+                    }
+                }
+              
             }
-            catch (DbUpdateException)
+            _context.TestValuation.Add(valuationModel);
+              await _context.SaveChangesAsync();
+
+            }
+            catch (Exception)
             {
                 if (ValuationModelExists(valuationModel.ValuationId))
                 {
@@ -328,8 +464,8 @@ namespace SBI_MF.Controllers
                     throw;
                 }
             }
-
-            return CreatedAtAction("GetValuationModel", new { id = valuationModel.ValuationId }, valuationModel);
+              await _context.SaveChangesAsync();
+              return CreatedAtAction("GetValuationModel", new { id = valuationModel.ValuationId }, valuationModel);
         }
 
         // DELETE: api/Valuation/5
