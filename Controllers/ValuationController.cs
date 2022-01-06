@@ -298,120 +298,120 @@ namespace SBI_MF.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
 
-       [HttpPost]
+        [HttpPost]
         public async Task<ActionResult<ValuationModel>> PostValuationModel(IFormFile file)
         {
-            ValuationModel valuationModel=new ValuationModel();
+            ValuationModel valuationModel = new ValuationModel();
             try
             {
-               
-                string message="";
-                IExcelDataReader reader = null;  
-                var valuationData=new List<ValuationModel>();
-                var fileList=HttpContext.Request.Form.Files;
+
+                string message = "";
+                IExcelDataReader reader = null;
+                var valuationData = new List<ValuationModel>();
+                var fileList = HttpContext.Request.Form.Files;
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 // Stream FileStreams = null; 
-                string fileExt = System.IO.Path.GetExtension(file.FileName).ToLower(); 
+                string fileExt = System.IO.Path.GetExtension(file.FileName).ToLower();
                 DataSet dsExcelData = new DataSet();
-        
-             
-                if(file != null)
+
+
+                if (file != null)
                 {
                     //FileStream.Position=1;
                     //FileStreams=file.OpenReadStream();
-                    using(var fs=new MemoryStream())
+                    using (var fs = new MemoryStream())
                     {
-               
-                        foreach(var files in fileList)
+
+                        foreach (var files in fileList)
                         {
                             await files.CopyToAsync(fs);
                         }
-            
-                    
-                    string path=Path.Combine(Directory.GetCurrentDirectory(),"Uploads");
-                    
-                    
-                    if (!Directory.Exists(path))
-                    {
-                        Directory.CreateDirectory(path);
-                    }
 
-                    string fileName = Path.GetFileName(file.FileName);
-                    
-                    string filePath = Path.Combine(path, fileName);
-                        
-                    
-                    using (FileStream stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        file.CopyTo(stream);
-                    }
-                  
-                    // var estEncoding = Encoding.GetEncoding(1252);
-                    //     var est= File.ReadAllText(filePath, estEncoding);       
-                    //     var utf = Encoding.UTF8;
-                    //     est = utf.GetString(Encoding.Convert(estEncoding, utf, estEncoding.GetBytes(est)));
 
-                       
-                    if(fileExt == ".xls")
-                    {
-                        reader = ExcelReaderFactory.CreateBinaryReader(fs);
-                    }
-                    else if(fileExt == ".xlsx")
-                    {
-                        reader = ExcelReaderFactory.CreateOpenXmlReader(fs);  
-                    }
-                    else  
-                    {
-                        message = "The file format is not supported.";  
-                    }
+                        string path = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
 
-                    dsExcelData = reader.AsDataSet();  
-                    reader.Close(); 
 
-                    if(dsExcelData != null && dsExcelData.Tables.Count > 0)
-                    {
-                        DataTable dtEmp = new DataTable();
-                        // dtEmp=dsExcelData.Tables[0].Clone();
-                        dtEmp=dsExcelData.Tables[0];
-
-                        if(dtEmp!=null)
+                        if (!Directory.Exists(path))
                         {
-                        ValuationModel objEmp = new ValuationModel(); 
-                        for(int i = 1; i < dtEmp.Rows.Count; i++)
-                        {
-                           
-                         
-                            objEmp.ValuationId =SBIMFDbContext.fn_getValuationIDs();
-                            objEmp.TransactionId = (dtEmp.Rows[i][1].ToString().Trim());
-                            objEmp.Workflow =  (dtEmp.Rows[i][2].ToString().Trim());
-                            objEmp.TransactionType =  (dtEmp.Rows[i][3].ToString().Trim());
-                            objEmp.LondonAMRateUSD =  (dtEmp.Rows[i][4].ToString().Trim());
-                            objEmp.FixingChargesUSD = (dtEmp.Rows[i][5].ToString().Trim());
-                            objEmp.PremiumUSD =   (dtEmp.Rows[i][6].ToString().Trim());
-                            objEmp.MetalRateUSD = (dtEmp.Rows[i][7].ToString().Trim());
-                            objEmp.ConversionFactor =  (dtEmp.Rows[i][8].ToString().Trim());
-                            objEmp.RBIReferenceRateINR =  (dtEmp.Rows[i][9].ToString().Trim());
-                            objEmp.MetalRatePerkgINR = (dtEmp.Rows[i][10].ToString().Trim());
-                            objEmp.CustomsDutyKg = (dtEmp.Rows[i][11].ToString().Trim());
-                            objEmp.StampDutyINR =  (dtEmp.Rows[i][12].ToString().Trim());
-                            objEmp.FinalPriceUSD =  (dtEmp.Rows[i][13].ToString().Trim());
-                            objEmp.TransactionStatus = "N";
-
-                            _context.TestValuation.Add(objEmp);
-                                await _context.SaveChangesAsync();
-
+                            Directory.CreateDirectory(path);
                         }
 
-                               
+                        string fileName = Path.GetFileName(file.FileName);
+
+                        string filePath = Path.Combine(path, fileName);
+
+
+                        using (FileStream stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            file.CopyTo(stream);
                         }
-               
+
+                        // var estEncoding = Encoding.GetEncoding(1252);
+                        //     var est= File.ReadAllText(filePath, estEncoding);       
+                        //     var utf = Encoding.UTF8;
+                        //     est = utf.GetString(Encoding.Convert(estEncoding, utf, estEncoding.GetBytes(est)));
+
+
+                        if (fileExt == ".xls")
+                        {
+                            reader = ExcelReaderFactory.CreateBinaryReader(fs);
+                        }
+                        else if (fileExt == ".xlsx")
+                        {
+                            reader = ExcelReaderFactory.CreateOpenXmlReader(fs);
+                        }
+                        else
+                        {
+                            message = "The file format is not supported.";
+                        }
+
+                        dsExcelData = reader.AsDataSet();
+                        reader.Close();
+
+                        if (dsExcelData != null && dsExcelData.Tables.Count > 0)
+                        {
+                            DataTable dtEmp = new DataTable();
+                            // dtEmp=dsExcelData.Tables[0].Clone();
+                            dtEmp = dsExcelData.Tables[0];
+
+                            if (dtEmp != null)
+                            {
+                                ValuationModel objEmp = new ValuationModel();
+                                for (int i = 1; i < dtEmp.Rows.Count; i++)
+                                {
+
+
+                                    objEmp.ValuationId = SBIMFDbContext.fn_getValuationIDs();
+                                    objEmp.TransactionId = (dtEmp.Rows[i][1].ToString().Trim());
+                                    objEmp.Workflow = (dtEmp.Rows[i][2].ToString().Trim());
+                                    objEmp.TransactionType = (dtEmp.Rows[i][3].ToString().Trim());
+                                    objEmp.LondonAMRateUSD = (dtEmp.Rows[i][4].ToString().Trim());
+                                    objEmp.FixingChargesUSD = (dtEmp.Rows[i][5].ToString().Trim());
+                                    objEmp.PremiumUSD = (dtEmp.Rows[i][6].ToString().Trim());
+                                    objEmp.MetalRateUSD = (dtEmp.Rows[i][7].ToString().Trim());
+                                    objEmp.ConversionFactor = (dtEmp.Rows[i][8].ToString().Trim());
+                                    objEmp.RBIReferenceRateINR = (dtEmp.Rows[i][9].ToString().Trim());
+                                    objEmp.MetalRatePerkgINR = (dtEmp.Rows[i][10].ToString().Trim());
+                                    objEmp.CustomsDutyKg = (dtEmp.Rows[i][11].ToString().Trim());
+                                    objEmp.StampDutyINR = (dtEmp.Rows[i][12].ToString().Trim());
+                                    objEmp.FinalPriceUSD = (dtEmp.Rows[i][13].ToString().Trim());
+                                    objEmp.TransactionStatus = "N";
+
+                                    _context.TestValuation.Add(objEmp);
+                                    await _context.SaveChangesAsync();
+
+                                }
+
+
+                            }
+
+                        }
                     }
+
                 }
-              
-            }
-                        
-                       
-            return Ok();
+
+
+                return Ok();
             }
             catch (Exception)
             {
@@ -424,8 +424,9 @@ namespace SBI_MF.Controllers
                     throw;
                 }
             }
-             
+
         }
+
 
         // DELETE: api/Valuation/5
         [HttpDelete("{id}")]
