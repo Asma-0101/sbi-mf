@@ -17,6 +17,7 @@ namespace SBI_MF.Data
         public DbSet<CustodianInstructionModel> CustodianInstruction { get; set; }
         public DbSet<ValuationModel> TestValuation { get; set; }
         public DbSet<DealConfirmationModel> DealConfirmation { get; set; }
+        public DbSet<LogModel> Log { get; set; }
 
         public SBIMFDbContext(DbContextOptions options) : base(options)
         {
