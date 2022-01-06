@@ -53,8 +53,8 @@ namespace SBI_MF.Controllers
         // PUT: api/Valuation/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut]
-        public async Task<IActionResult> PutValuationModel( ValuationModel valuationModel, string Task)
+       [HttpPut]
+        public async Task<IActionResult> PutValuationModel(ValuationModel valuationModel, string Task)
         {
             // if (id != valuationModel.ValuationId)
             // {
@@ -74,54 +74,54 @@ namespace SBI_MF.Controllers
                             TransactionStatus = valuationModel.TransactionStatus = "A"
                         };
 
-                          await _context.SaveChangesAsync();
+                        await _context.SaveChangesAsync();
 
-                           DealConfirmationModel DealConfirmationModel1 = new DealConfirmationModel();
-                           TransactionCaptureModel TransactionCaptureModel1 = new TransactionCaptureModel();
-                           CounterPartyModel counterPartyModel1 = new CounterPartyModel();
-                           CustodianInstructionModel custodianInstructionModel1 = new CustodianInstructionModel();
-                           GoldModel goldModel1 = new GoldModel();
-                           TaxesModel taxesModel1 = new TaxesModel();
+                        DealConfirmationModel DealConfirmationModel1 = new DealConfirmationModel();
+                        TransactionCaptureModel TransactionCaptureModel1 = new TransactionCaptureModel();
+                        CounterPartyModel counterPartyModel1 = new CounterPartyModel();
+                        CustodianInstructionModel custodianInstructionModel1 = new CustodianInstructionModel();
+                        GoldModel goldModel1 = new GoldModel();
+                        TaxesModel taxesModel1 = new TaxesModel();
 
-                 
 
-                    var Transdata = (from c in _context.TransactionCapture
-                                    where  c.TransactionId== valuationModel.TransactionId
-                                             select new
-                                             {
-                                                SchemeName =c.SchemeName,
-                                                TransactionType =c.TransactionType,
-                                                DealDate = c.TransactionDate,
-                                                ValueDate = c.ValueDate,
-                                                QuantityInKilogram = c.QuantityInKg,
-                                                
-                                             }).ToList();
+
+                        var Transdata = (from c in _context.TransactionCapture
+                                         where c.TransactionId == valuationModel.TransactionId
+                                         select new
+                                         {
+                                             SchemeName = c.SchemeName,
+                                             TransactionType = c.TransactionType,
+                                             DealDate = c.TransactionDate,
+                                             ValueDate = c.ValueDate,
+                                             QuantityInKilogram = c.QuantityInKg,
+
+                                         }).ToList();
 
                         foreach (var c1 in Transdata)
                         {
-                            
+
                             DealConfirmationModel1.SchemeName = c1.SchemeName;
                             DealConfirmationModel1.TransactionType = c1.TransactionType;
                             DealConfirmationModel1.DealDate = c1.DealDate;
                             DealConfirmationModel1.ValueDate = c1.ValueDate;
                             DealConfirmationModel1.QuantityInKilogram = c1.QuantityInKilogram;
-                          
+
 
                             break;
                         }
-                    
-                    var DealData = (from c in _context.CounterPartyMaster
-                                    join t in _context.TransactionCapture on c.CounterpartyName equals t.Counterparty
-                                    where  t.TransactionId== valuationModel.TransactionId
-                                             select new
-                                             {
-                                                 Name = c.CounterpartyName,
-                                                 Address =  c.Address1,
-                                                 ContactNo = c.MobNo1,
-                                                 ContactPersonName = c.ContactPerson,
-                                                 GSTNo = c.GSTNo,
-                                                 
-                                             }).ToList();
+
+                        var DealData = (from c in _context.CounterPartyMaster
+                                        join t in _context.TransactionCapture on c.CounterpartyName equals t.Counterparty
+                                        where t.TransactionId == valuationModel.TransactionId
+                                        select new
+                                        {
+                                            Name = c.CounterpartyName,
+                                            Address = c.Address1,
+                                            ContactNo = c.MobNo1,
+                                            ContactPersonName = c.ContactPerson,
+                                            GSTNo = c.GSTNo,
+
+                                        }).ToList();
 
                         foreach (var c1 in DealData)
                         {
@@ -135,16 +135,16 @@ namespace SBI_MF.Controllers
                         }
 
                         var DealData1 = (from c in _context.CounterPartyMaster
-                                        join t in _context.TransactionCapture on c.CounterpartyName equals t.Counterparty
-                                        where  t.TransactionId== valuationModel.TransactionId && t.TransactionType == "S"
-                                        select new
-                                             {
-                                                BranchName =c.BankBranch,
-                                                IFSCCode = c.IFSC,
-                                                BeneficiaryAccount = c.AccountNo,
-                                                BeneficiaryAccountName =c.NameBeneficiary,
-                                                 
-                                             }).ToList();
+                                         join t in _context.TransactionCapture on c.CounterpartyName equals t.Counterparty
+                                         where t.TransactionId == valuationModel.TransactionId && t.TransactionType == "S"
+                                         select new
+                                         {
+                                             BranchName = c.BankBranch,
+                                             IFSCCode = c.IFSC,
+                                             BeneficiaryAccount = c.AccountNo,
+                                             BeneficiaryAccountName = c.NameBeneficiary,
+
+                                         }).ToList();
 
                         foreach (var c1 in DealData1)
                         {
@@ -152,130 +152,147 @@ namespace SBI_MF.Controllers
                             DealConfirmationModel1.IFSCCode = c1.IFSCCode;
                             DealConfirmationModel1.BeneficiaryAccount = c1.BeneficiaryAccount;
                             DealConfirmationModel1.BeneficiaryAccountName = c1.BeneficiaryAccountName;
-                       
+
 
                             break;
                         }
 
                         var GoldData = (from c in _context.GoldMaster
-                                       join t in _context.TransactionCapture on c.SecurityLocation equals t.SecurityLocation
-                                       where  c.SecurityLocation== t.SecurityLocation
-                                             select new
-                                             {
-                                                Commodity =c.CommodityPurity,
-                                                Commodity1 =c.CommodityDenomination,
-                                                CounterpartyShipper = c.CounterpartyShipper,
-                                                
-                                             }).ToList();
+                                        join t in _context.TransactionCapture on c.SecurityLocation equals t.SecurityLocation
+                                        where c.SecurityLocation == t.SecurityLocation
+                                        select new
+                                        {
+                                            Commodity = c.CommodityPurity,
+                                            Commodity1 = c.CommodityDenomination,
+                                            CounterpartyShipper = c.CounterpartyShipper,
+
+                                        }).ToList();
 
                         foreach (var c1 in GoldData)
                         {
-                            DealConfirmationModel1.Commodity = c1.Commodity + " " +c1.Commodity1;
+                            DealConfirmationModel1.Commodity = c1.Commodity + " " + c1.Commodity1;
                             DealConfirmationModel1.CounterpartyShipper = c1.CounterpartyShipper;
-                          
+
 
                             break;
                         }
 
                         var tax = (from c in _context.TaxMaster
-                                        where c.TaxId == "TAX0000001"
-                                             select new
-                                             {
-                                                TaxId =c.TaxId,
-                                                State =c.State,
-                                                SGST = c.SGST,
-                                                GST = c.GST,
-                                                CGST = c.CGST,
-                                                
-                                             }).ToList();
+                                   where c.TaxId == "TAX0000001"
+                                   select new
+                                   {
+                                       TaxId = c.TaxId,
+                                       State = c.State,
+                                       SGST = c.SGST,
+                                       GST = c.GST,
+                                       CGST = c.CGST,
+
+                                   }).ToList();
                         foreach (var c1 in tax)
                         {
                             DealConfirmationModel1.Rate = 3;
                             DealConfirmationModel1.TotalPrice = (DealConfirmationModel1.QuantityInKilogram * DealConfirmationModel1.Rate);
                             DealConfirmationModel1.SGST = c1.SGST * DealConfirmationModel1.TotalPrice;
                             DealConfirmationModel1.CGST = c1.CGST * DealConfirmationModel1.TotalPrice;
-                            DealConfirmationModel1.GST = c1.GST* DealConfirmationModel1.TotalPrice;
-                            DealConfirmationModel1.TotalGST = DealConfirmationModel1.SGST+DealConfirmationModel1.CGST+DealConfirmationModel1.GST;
-                          
+                            DealConfirmationModel1.GST = c1.GST * DealConfirmationModel1.TotalPrice;
+                            DealConfirmationModel1.TotalGST = DealConfirmationModel1.SGST + DealConfirmationModel1.CGST + DealConfirmationModel1.GST;
+
 
                             break;
                         }
 
                         var data = new DealConfirmationDto()
                         {
-                        DealConfirmId = DealConfirmationModel1.DealConfirmId = SBIMFDbContext.fn_DealConfirmID(),
-                        TransactionId = DealConfirmationModel1.TransactionId = valuationModel.TransactionId,
-                        DealRefNo = DealConfirmationModel1.DealRefNo = "",
-                        SchemeName=DealConfirmationModel1.SchemeName,
-                        TransactionType=DealConfirmationModel1.TransactionType,
-                        DealDate=DealConfirmationModel1.DealDate,
-                        ValueDate=DealConfirmationModel1.ValueDate,
-                        QuantityInKilogram=DealConfirmationModel1.QuantityInKilogram,
-                        Name=DealConfirmationModel1.Name,
-                        Address=DealConfirmationModel1.Address,
-                        ContactNo=DealConfirmationModel1.ContactNo,
-                        ContactPersonName=DealConfirmationModel1.ContactPersonName,
-                        GSTNo=DealConfirmationModel1.GSTNo,
-                        BranchName=DealConfirmationModel1.BranchName,
-                        IFSCCode=DealConfirmationModel1.IFSCCode,
-                        BeneficiaryAccount=DealConfirmationModel1.BeneficiaryAccount,
-                        BeneficiaryAccountName=DealConfirmationModel1.BeneficiaryAccountName,
-                        Commodity=DealConfirmationModel1.Commodity,
-                        CounterpartyShipper=DealConfirmationModel1.CounterpartyShipper,
-                        ClientName = DealConfirmationModel1.ClientName = "SBI-MUTUAL-FUND",
-                        Rate = DealConfirmationModel1.Rate,
-                        Remarks = DealConfirmationModel1.Remarks = "",
-                        DealStatus = DealConfirmationModel1.DealStatus = "Incomplete",
-                        TotalPrice = DealConfirmationModel1.TotalPrice,
-                        SGST = DealConfirmationModel1.SGST,
-                        CGST = DealConfirmationModel1.CGST,
-                        GST = DealConfirmationModel1.GST,
-                        TotalGST = DealConfirmationModel1.TotalGST,
-                        TotalConsideration =  DealConfirmationModel1.TotalConsideration = (DealConfirmationModel1.TotalPrice + DealConfirmationModel1.TotalGST),
-                        OtherApplicableTaxes = DealConfirmationModel1.OtherApplicableTaxes = "",
-                        TaxCollectedAtSource = DealConfirmationModel1.TaxCollectedAtSource = DealConfirmationModel1.TotalConsideration,
-                        NetConsideration =  DealConfirmationModel1.NetConsideration = (DealConfirmationModel1.TotalConsideration + DealConfirmationModel1.TaxCollectedAtSource),
+                            DealConfirmId = DealConfirmationModel1.DealConfirmId = SBIMFDbContext.fn_DealConfirmID(),
+                            TransactionId = DealConfirmationModel1.TransactionId = valuationModel.TransactionId,
+                            DealRefNo = DealConfirmationModel1.DealRefNo = "",
+                            SchemeName = DealConfirmationModel1.SchemeName,
+                            TransactionType = DealConfirmationModel1.TransactionType,
+                            DealDate = DealConfirmationModel1.DealDate,
+                            ValueDate = DealConfirmationModel1.ValueDate,
+                            QuantityInKilogram = DealConfirmationModel1.QuantityInKilogram,
+                            Name = DealConfirmationModel1.Name,
+                            Address = DealConfirmationModel1.Address,
+                            ContactNo = DealConfirmationModel1.ContactNo,
+                            ContactPersonName = DealConfirmationModel1.ContactPersonName,
+                            GSTNo = DealConfirmationModel1.GSTNo,
+                            BranchName = DealConfirmationModel1.BranchName,
+                            IFSCCode = DealConfirmationModel1.IFSCCode,
+                            BeneficiaryAccount = DealConfirmationModel1.BeneficiaryAccount,
+                            BeneficiaryAccountName = DealConfirmationModel1.BeneficiaryAccountName,
+                            Commodity = DealConfirmationModel1.Commodity,
+                            CounterpartyShipper = DealConfirmationModel1.CounterpartyShipper,
+                            ClientName = DealConfirmationModel1.ClientName = "SBI-MUTUAL-FUND",
+                            Rate = DealConfirmationModel1.Rate,
+                            Remarks = DealConfirmationModel1.Remarks = "",
+                            DealStatus = DealConfirmationModel1.DealStatus = "Incomplete",
+                            TotalPrice = DealConfirmationModel1.TotalPrice,
+                            SGST = DealConfirmationModel1.SGST,
+                            CGST = DealConfirmationModel1.CGST,
+                            GST = DealConfirmationModel1.GST,
+                            TotalGST = DealConfirmationModel1.TotalGST,
+                            TotalConsideration = DealConfirmationModel1.TotalConsideration = (DealConfirmationModel1.TotalPrice + DealConfirmationModel1.TotalGST),
+                            OtherApplicableTaxes = DealConfirmationModel1.OtherApplicableTaxes = "",
+                            TaxCollectedAtSource = DealConfirmationModel1.TaxCollectedAtSource = DealConfirmationModel1.TotalConsideration,
+                            NetConsideration = DealConfirmationModel1.NetConsideration = (DealConfirmationModel1.TotalConsideration + DealConfirmationModel1.TaxCollectedAtSource),
                         };
 
                         _context.DealConfirmation.Add(DealConfirmationModel1);
 
                         await _context.SaveChangesAsync();
-                        
-                        
+
+
                     }
-                    
-                    
+
+
                 }
 
-            else if(Task == "Reject")
-            {
-                if (valuationModel.TransactionStatus == "N")
+                else if (Task == "Reject")
+
                 {
-                   var dto = new TransactionCaptureDto()
-                   {
-                     TransactionStatus = valuationModel.TransactionStatus = "R"
-                   };
+                    LogModel LogModel1 = new LogModel();
+
+                    if (valuationModel.TransactionStatus == "N")
+                    {
+                        LogModel1.ValuationId = valuationModel.ValuationId;
+                        LogModel1.TransactionId = valuationModel.TransactionId;
+                        LogModel1.Workflow = valuationModel.Workflow;
+                        LogModel1.TransactionType = valuationModel.TransactionType;
+                        LogModel1.LondonAMRateUSD = valuationModel.LondonAMRateUSD;
+                        LogModel1.FixingChargesUSD = valuationModel.FixingChargesUSD;
+                        LogModel1.PremiumUSD = valuationModel.PremiumUSD;
+                        LogModel1.MetalRateUSD = valuationModel.MetalRateUSD;
+                        LogModel1.ConversionFactor = valuationModel.ConversionFactor;
+                        LogModel1.RBIReferenceRateINR = valuationModel.RBIReferenceRateINR;
+                        LogModel1.MetalRatePerkgINR = valuationModel.MetalRatePerkgINR;
+                        LogModel1.CustomsDutyKg = valuationModel.CustomsDutyKg;
+                        LogModel1.StampDutyINR = valuationModel.StampDutyINR;
+                        LogModel1.FinalPriceUSD = valuationModel.FinalPriceUSD;
+                        LogModel1.TransactionStatus = "R";
+                                                
+
+                        _context.TestValuation.Remove(valuationModel);                
+                        _context.Log.Add(LogModel1);
+
+                       await _context.SaveChangesAsync();
+
+                    }
+
+
                 }
 
-                 await _context.SaveChangesAsync();
-            }
 
-              
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception)
             {
-                // if (!ValuationModelExists(id))
-                // {
-                //     return NotFound();
-                // }
-                // else
-                // {
-                //     throw;
-                // }
+
+                throw;
+
             }
 
             return NoContent();
         }
+
 
         // POST: api/Valuation
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
