@@ -298,7 +298,7 @@ namespace SBI_MF.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
 
-        [HttpPost]
+    [HttpPost]
         public async Task<ActionResult<ValuationModel>> PostValuationModel(IFormFile file)
         {
             ValuationModel valuationModel = new ValuationModel();
@@ -329,6 +329,7 @@ namespace SBI_MF.Controllers
 
 
                         string path = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+                         string dt = DateTime.Now.ToString("MM_dd_yyyy_hh_mm_ss") + "_";
 
 
                         if (!Directory.Exists(path))
@@ -336,9 +337,10 @@ namespace SBI_MF.Controllers
                             Directory.CreateDirectory(path);
                         }
 
-                        string fileName = Path.GetFileName(file.FileName);
-
-                        string filePath = Path.Combine(path, fileName);
+                       string fileName = Path.GetFileName(file.FileName);
+                       string f1 = fileName+dt+fileExt;
+ 
+                        string filePath = Path.Combine(path, f1);
 
 
                         using (FileStream stream = new FileStream(filePath, FileMode.Create))
