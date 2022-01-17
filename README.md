@@ -8,3 +8,4 @@ dotnet add package Microsoft.AspNetCore.Mvc.NewtonsoftJson --version 3.1.4
 
 
 dotnet add package ClosedXML
+dotnet add package ExcelDataReader
