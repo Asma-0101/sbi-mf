@@ -1,0 +1,145 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SBI_MF.Data;
+using sbi_mf_sbi_mfv1.Controllers.Dtos;
+using sbi_mf_sbi_mfv1.Models;
+
+namespace SBI_MF.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class TransactionStaggingController : ControllerBase
+    {
+        private readonly SBIMFDbContext _context;
+
+        public TransactionStaggingController(SBIMFDbContext context)
+        {
+            _context = context;
+        }
+
+        //GET: api/TransactionStagging
+        // [HttpGet]
+        // public async Task<ActionResult<IEnumerable<TransactionStaggingModel>>> GetTransaction_Stage()
+        // {
+        //     return await _context.Transaction_Stage.ToListAsync();
+        // }
+
+         [HttpGet("PendingRecord")]
+      
+        public IQueryable<TransactionStaggingDto> GetTransaction_Stage1()
+        {
+            try
+            {
+                var transaction1 = from t in _context.Transaction_Stage.Where(t => t.TaskStatus =="C")
+                                  select new TransactionStaggingDto()
+                                  {
+                                        Id=t.Id,
+                                        BusinessKey = t.BusinessKey,
+                                        ProcessInstanceId = t.ProcessInstanceId,
+                                        TaskInstanceId = t.TaskInstanceId,
+                                        TaskName = t.TaskName,
+                                        CreationDate = t.CreationDate,
+                                        TaskStatus = t.TaskStatus,
+                                        TaskCompletionDate = t.TaskCompletionDate,
+                                        RoleName = t.RoleName,
+                                        UserId = t.UserId
+                                  };
+
+                return transaction1;
+
+            }
+            catch
+            {
+                throw;
+            }
+
+
+        }
+
+
+
+        // GET: api/TransactionStagging/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TransactionStaggingModel>> GetTransactionStaggingModel(int id)
+        {
+            var transactionStaggingModel = await _context.Transaction_Stage.FindAsync(id);
+
+            if (transactionStaggingModel == null)
+            {
+                return NotFound();
+            }
+
+            return transactionStaggingModel;
+        }
+
+        // PUT: api/TransactionStagging/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
+        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutTransactionStaggingModel(int id, TransactionStaggingModel transactionStaggingModel)
+        {
+            if (id != transactionStaggingModel.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(transactionStaggingModel).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!TransactionStaggingModelExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // POST: api/TransactionStagging
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
+        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [HttpPost]
+        public async Task<ActionResult<TransactionStaggingModel>> PostTransactionStaggingModel(TransactionStaggingModel transactionStaggingModel)
+        {
+            _context.Transaction_Stage.Add(transactionStaggingModel);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetTransactionStaggingModel", new { id = transactionStaggingModel.Id }, transactionStaggingModel);
+        }
+
+        // DELETE: api/TransactionStagging/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<TransactionStaggingModel>> DeleteTransactionStaggingModel(int id)
+        {
+            var transactionStaggingModel = await _context.Transaction_Stage.FindAsync(id);
+            if (transactionStaggingModel == null)
+            {
+                return NotFound();
+            }
+
+            _context.Transaction_Stage.Remove(transactionStaggingModel);
+            await _context.SaveChangesAsync();
+
+            return transactionStaggingModel;
+        }
+
+        private bool TransactionStaggingModelExists(int id)
+        {
+            return _context.Transaction_Stage.Any(e => e.Id == id);
+        }
+    }
+}
