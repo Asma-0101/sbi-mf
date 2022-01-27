@@ -435,6 +435,117 @@ namespace SBI_MF.Controllers
 
             return NoContent();
         }
+        
+        
+        [HttpPut("AuthMultiple")]
+        public async Task<IActionResult> PutTransactionCaptureModel1( List<TransactionCaptureModel> transactionCaptureModel, string Task)
+        {
+            
+            try
+            {
+                if (Task == "Authorize")
+                {
+                    foreach(var x in transactionCaptureModel)
+                    {
+                    if (x.TransactionStatus == "N" || x.TransactionStatus == "M")
+                    {
+                        var dto = new TransactionCaptureDto()
+                        {
+                            TransactionStatus = x.TransactionStatus = "A"
+                        };
+
+                        _context.Entry(x).State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+
+
+                        CustodianInstructionModel custodianInstructionModel1 = new CustodianInstructionModel();
+                        TransactionCaptureModel transactionCaptureModel1 = new TransactionCaptureModel();
+                        CustodianModel custodianModel = new CustodianModel();
+                        GoldModel goldModel = new GoldModel();
+
+                        var data = new CustodianInstructionDto()
+                        {
+                            SecurityName = custodianInstructionModel1.SecurityName = x.Security,
+                            TradeDate = custodianInstructionModel1.TradeDate = x.TransactionDate,
+                            SettlementDate = custodianInstructionModel1.SettlementDate = x.ValueDate,
+                            Location = custodianInstructionModel1.Location = x.SecurityLocation,
+                            CounterParty = custodianInstructionModel1.CounterParty = x.Counterparty,
+                            QtyOfGoldBar = custodianInstructionModel1.QtyOfGoldBar = x.QuantityInKg,
+                            TransactionId = custodianInstructionModel1.TransactionId = x.TransactionId,
+                            CustodianInstructionId = custodianInstructionModel1.CustodianInstructionId = SBIMFDbContext.fn_getCustodianInstructionID(),
+                            Total = custodianInstructionModel1.Total = x.TotalUnits,
+                            DelRefNo = custodianInstructionModel1.DelRefNo = SBIMFDbContext.fn_getDealReference()                            
+                        };
+
+                        var custodianData = (from c in _context.CustodianMaster
+                                             join t in _context.TransactionCapture on c.Address3 equals t.SecurityLocation
+                                             where t.SecurityLocation == x.SecurityLocation
+                                             select new
+                                             {
+                                                 CustodianName = c.CustodianName,
+                                                 Address = c.Address1,
+                                                 ContactNo = c.MobileNumber1,
+                                                 ContactPerson = c.ContactPerson
+                                             }).ToList();
+
+                        foreach (var c1 in custodianData)
+                        {
+                            custodianInstructionModel1.CustodianName = c1.CustodianName;
+                            custodianInstructionModel1.Address = c1.Address;
+                            custodianInstructionModel1.ContactNo = c1.ContactNo;
+                            custodianInstructionModel1.ContactPerson = c1.ContactPerson;
+                            break;
+                        }
+
+                        var goldData = (from c in _context.TransactionCapture
+                                        join t in _context.GoldMaster on c.SecurityLocation equals t.SecurityLocation
+                                        where t.SecurityLocation == x.SecurityLocation
+                                        select new
+                                        {
+                                            BarWeightInGrams = t.BarWeightInGrams,
+                                            PurityOfGold = t.CommodityPurity,
+                                            VaultLocation = t.SecurityLocation
+                                        }).ToList();
+
+                        foreach (var c2 in goldData)
+                        {
+                            custodianInstructionModel1.WeightOfGoldBar = c2.BarWeightInGrams;
+                            custodianInstructionModel1.PurityOfGold = c2.PurityOfGold;
+                            custodianInstructionModel1.VaultLocation = c2.VaultLocation;
+                            break;
+                        }
+
+                        _context.CustodianInstruction.Add(custodianInstructionModel1);
+                    }
+                  }
+                }
+                else if (Task == "Reject")
+                {
+                    foreach(var x1 in transactionCaptureModel)
+                    {
+                    if (x1.TransactionStatus == "N" || x1.TransactionStatus == "M")
+                    {
+                        var dto = new TransactionCaptureDto()
+                        {
+                            TransactionStatus = x1.TransactionStatus = "R"
+                        };
+                    }
+
+                        _context.Entry(x1).State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                 throw;
+            }
+            
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
 
         // POST: api/TransactionCapture
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
