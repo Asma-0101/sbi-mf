@@ -581,16 +581,15 @@ namespace SBI_MF.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
 
-    [HttpPost]
+        [HttpPost]
         public async Task<ActionResult<ValuationModel>> PostValuationModel(IFormFile file)
         {
             ValuationModel valuationModel = new ValuationModel();
+            CustodianInstructionModel custodianInstructionModel1 = new CustodianInstructionModel();
+
             try
             {
-
-                string message = "";
                 IExcelDataReader reader = null;
-                var valuationData = new List<ValuationModel>();
                 var fileList = HttpContext.Request.Form.Files;
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 // Stream FileStreams = null; 
@@ -600,8 +599,7 @@ namespace SBI_MF.Controllers
 
                 if (file != null)
                 {
-                    //FileStream.Position=1;
-                    //FileStreams=file.OpenReadStream();
+                   
                     using (var fs = new MemoryStream())
                     {
 
@@ -647,7 +645,7 @@ namespace SBI_MF.Controllers
                         }
                         else
                         {
-                            message = "The file format is not supported.";
+                          return NotFound("The file format is not supported.");
                         }
 
                         dsExcelData = reader.AsDataSet();
@@ -665,7 +663,6 @@ namespace SBI_MF.Controllers
                                 for (int i = 1; i < dtEmp.Rows.Count; i++)
                                 {
 
-
                                     objEmp.ValuationId = SBIMFDbContext.fn_getValuationIDs();
                                     objEmp.TransactionId = (dtEmp.Rows[i][1].ToString().Trim());
                                     objEmp.Workflow = (dtEmp.Rows[i][2].ToString().Trim());
@@ -682,10 +679,31 @@ namespace SBI_MF.Controllers
                                     objEmp.FinalPriceUSD = (dtEmp.Rows[i][13].ToString().Trim());
                                     objEmp.TransactionStatus = "N";
 
-                                    _context.TestValuation.Add(objEmp);
-                                    await _context.SaveChangesAsync();
+                                   var path1 = (from t in _context.CustodianInstruction where t.TransactionId == objEmp.TransactionId
+                                              select new CustodianInstructionDto()
+                                                {
+                                                    TransactionId = t.TransactionId,
+                                                }).ToList();
 
+                                    foreach(var p in path1)
+                                    {
+                                        valuationModel.TransactionId=p.TransactionId;
+
+                                      break;
+                                    }
+
+                                    if( objEmp.TransactionId==valuationModel.TransactionId)
+                                    {
+                                         _context.TestValuation.Add(objEmp);
+                                          await _context.SaveChangesAsync();
+                                    }
+                                    else
+                                    {
+                                      return NotFound("Please enter Valid TransactionId mapping.");
+                                    }
+                                 
                                 }
+
 
 
                             }
