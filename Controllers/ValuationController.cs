@@ -580,12 +580,13 @@ namespace SBI_MF.Controllers
         // POST: api/Valuation
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-
-        [HttpPost]
+  [HttpPost]
         public async Task<ActionResult<ValuationModel>> PostValuationModel(IFormFile file)
         {
             ValuationModel valuationModel = new ValuationModel();
             CustodianInstructionModel custodianInstructionModel1 = new CustodianInstructionModel();
+
+            List<KeyValuePair<string, string>> error = new List<KeyValuePair<string, string>>();
 
             try
             {
@@ -595,6 +596,7 @@ namespace SBI_MF.Controllers
                 // Stream FileStreams = null; 
                 string fileExt = System.IO.Path.GetExtension(file.FileName).ToLower();
                 DataSet dsExcelData = new DataSet();
+                
 
 
                 if (file != null)
@@ -660,9 +662,9 @@ namespace SBI_MF.Controllers
                             if (dtEmp != null)
                             {
                                 ValuationModel objEmp = new ValuationModel();
-                                for (int i = 1; i < dtEmp.Rows.Count; i++)
+                                for (int i = 0; i < dtEmp.Rows.Count; i++)
                                 {
-
+                                   
                                     objEmp.ValuationId = SBIMFDbContext.fn_getValuationIDs();
                                     objEmp.TransactionId = (dtEmp.Rows[i][1].ToString().Trim());
                                     objEmp.Workflow = (dtEmp.Rows[i][2].ToString().Trim());
@@ -679,10 +681,12 @@ namespace SBI_MF.Controllers
                                     objEmp.FinalPriceUSD = (dtEmp.Rows[i][13].ToString().Trim());
                                     objEmp.TransactionStatus = "N";
 
-                                   var path1 = (from t in _context.CustodianInstruction where t.TransactionId == objEmp.TransactionId
+                            
+                                    var path1 = (from t in _context.CustodianInstruction join b in _context.TransactionCapture on t.TransactionId equals b.TransactionId where t.TransactionId == objEmp.TransactionId && b.TransactionType == objEmp.TransactionType
                                               select new CustodianInstructionDto()
                                                 {
                                                     TransactionId = t.TransactionId,
+
                                                 }).ToList();
 
                                     foreach(var p in path1)
@@ -691,7 +695,7 @@ namespace SBI_MF.Controllers
 
                                       break;
                                     }
-
+                                
                                     if( objEmp.TransactionId==valuationModel.TransactionId)
                                     {
                                          _context.TestValuation.Add(objEmp);
@@ -699,12 +703,19 @@ namespace SBI_MF.Controllers
                                     }
                                     else
                                     {
-                                      return NotFound("Please enter Valid TransactionId mapping.");
+                                    //   return NotFound("Please enter Valid TransactionId mapping & TransactionType for TransactionId : "+valuationModel.TransactionId+"");
+                                    //    string error = valuationModel.TransactionId + "Please enter Valid TransactionId mapping & TransactionType for TransactionId";
+                                    // return new ObjectResult(new error { Id = valuationModel.TransactionId, Name = "Please enter Valid TransactionId mapping & TransactionType for TransactionId" }) { StatusCode = 200 };
+
+                                    error.Insert(0, new KeyValuePair<string, string>( objEmp.TransactionId,"Please enter Valid TransactionId mapping & TransactionType for TransactionId"));
+
+                                   
                                     }
-                                 
+
+
+                                  
+                               
                                 }
-
-
 
                             }
 
@@ -713,8 +724,8 @@ namespace SBI_MF.Controllers
 
                 }
 
-
-                return Ok();
+                
+                return Ok(error);
             }
             catch (Exception)
             {
@@ -729,6 +740,7 @@ namespace SBI_MF.Controllers
             }
 
         }
+        
 
 
         // DELETE: api/Valuation/5
