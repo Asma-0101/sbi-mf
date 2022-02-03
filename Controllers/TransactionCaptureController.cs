@@ -68,7 +68,41 @@ namespace SBI_MF.Controllers
 
         }
 
+        [HttpGet("PendingRecord")]
+      
+        public IQueryable<TransactionCaptureDto> GetTransactionCapturePR()
+        {
+            try
+            {
+                var transaction = from t in _context.TransactionCapture.Where(b => b.TransactionStatus == "N" || b.TransactionStatus == "M")
+                                select new TransactionCaptureDto()
+                                {
+                                    TransactionId = t.TransactionId,
+                                    TransactionDate = t.TransactionDate,
+                                    SettlementTenor = t.SettlementTenor,
+                                    ValueDate = t.ValueDate,
+                                    Counterparty = t.Counterparty,
+                                    SchemeName = t.SchemeName,
+                                    Security = t.Security,
+                                    SecurityLocation = t.SecurityLocation,
+                                    DealValue = t.DealValue,
+                                    QuantityInKg = t.QuantityInKg,
+                                    NoOfUnitsPerKg = t.NoOfUnitsPerKg,
+                                    TotalUnits = t.TotalUnits,
+                                    TransactionStatus = t.TransactionStatus,
+                                    TransactionType = t.TransactionType
+                                };
 
+                return transaction;
+
+            }
+                catch
+                {
+                    throw;
+                }
+
+
+                }
 
 
         [HttpGet("SalesMaker")]
