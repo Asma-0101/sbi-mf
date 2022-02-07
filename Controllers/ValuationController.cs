@@ -331,16 +331,13 @@ namespace SBI_MF.Controllers
         }
         
         
-        
-         [HttpPut("AuthMultiple")]
+        [HttpPut("AuthMultiple")]
         public async Task<IActionResult> PutValuationModel1(List<ValuationModel> valuationModel, string Task)
         {
             // if (id != valuationModel.ValuationId)
             // {
             //     return BadRequest();
             // }
-
-            _context.Entry(valuationModel).State = EntityState.Modified;
 
             try
             {
