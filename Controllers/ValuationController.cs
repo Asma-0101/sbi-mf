@@ -577,23 +577,51 @@ namespace SBI_MF.Controllers
         // POST: api/Valuation
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-  [HttpPost]
+           [HttpPost("Method")]
+        public void InsertLog(string TransactionId,int count,int totalCount,string Message,String Makerdate)
+        {
+            
+            using(var connection = new SqlConnection("server=nucdbsrv; database=SBI_MF; user id=sa; password=nuc1234$"))
+                {  
+                    connection.Open();
+                     String date = DateTime.Now.ToString("MM/dd/yyyy hh:mm ");
+                    var sql = "INSERT INTO Log_tbl(Id,LastCount, TotalCount, Message, Makerdate) VALUES(@Id,@LastCount, @TotalCount, @Message, @Makerdate)";
+                    using(var cmd = new SqlCommand(sql, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@Id",TransactionId);
+                        cmd.Parameters.AddWithValue("@LastCount", count);
+                        cmd.Parameters.AddWithValue("@TotalCount", totalCount);
+                        cmd.Parameters.AddWithValue("@Message", Message);
+                        cmd.Parameters.AddWithValue("@Makerdate", date);
+                    
+                        cmd.ExecuteNonQuery();
+                    }
+            
+                }
+            
+            //return CreatedAtAction("GetByID", new { id = transactionCaptureModel.TransactionId }, transactionCaptureModel);
+        }
+
+        [HttpPost]
         public async Task<ActionResult<ValuationModel>> PostValuationModel(IFormFile file)
         {
             ValuationModel valuationModel = new ValuationModel();
             CustodianInstructionModel custodianInstructionModel1 = new CustodianInstructionModel();
 
-            List<KeyValuePair<string, string>> error = new List<KeyValuePair<string, string>>();
 
             try
             {
+                String date = DateTime.Now.ToString("MM/dd/yyyy hh:mm ");
                 IExcelDataReader reader = null;
                 var fileList = HttpContext.Request.Form.Files;
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
                 // Stream FileStreams = null; 
                 string fileExt = System.IO.Path.GetExtension(file.FileName).ToLower();
                 DataSet dsExcelData = new DataSet();
-                
+                string globalError = null;
+                string typeMessage = null;
+                string mapMessage = null;
+        
 
 
                 if (file != null)
@@ -619,6 +647,7 @@ namespace SBI_MF.Controllers
 
                        string fileName = Path.GetFileName(file.FileName);
                        string f1 = fileName+dt+fileExt;
+                      
  
                         string filePath = Path.Combine(path, f1);
 
@@ -659,8 +688,10 @@ namespace SBI_MF.Controllers
                             if (dtEmp != null)
                             {
                                 ValuationModel objEmp = new ValuationModel();
-                                for (int i = 0; i < dtEmp.Rows.Count; i++)
+                                for (int i = 1; i < dtEmp.Rows.Count; i++)
                                 {
+                                     int count = i;
+                                     int Totalcount = dtEmp.Rows.Count;
                                    
                                     objEmp.ValuationId = SBIMFDbContext.fn_getValuationIDs();
                                     objEmp.TransactionId = (dtEmp.Rows[i][1].ToString().Trim());
@@ -679,7 +710,7 @@ namespace SBI_MF.Controllers
                                     objEmp.TransactionStatus = "N";
 
                             
-                                    var path1 = (from t in _context.CustodianInstruction join b in _context.TransactionCapture on t.TransactionId equals b.TransactionId where t.TransactionId == objEmp.TransactionId && b.TransactionType == objEmp.TransactionType
+                                    var path1 = (from t in _context.CustodianInstruction where t.TransactionId == objEmp.TransactionId 
                                               select new CustodianInstructionDto()
                                                 {
                                                     TransactionId = t.TransactionId,
@@ -692,26 +723,51 @@ namespace SBI_MF.Controllers
 
                                       break;
                                     }
+                                     var path2 = (from c in _context.TransactionCapture where c.TransactionId==objEmp.TransactionId
+                                              select new TransactionCaptureDto()
+                                                {
+                                                    TransactionType = c.TransactionType,
+
+                                                }).ToList();
+
+                                    foreach(var p2 in path2)
+                                    {
+                                        valuationModel.TransactionType=p2.TransactionType;
+
+                                      break;
+                                    }
                                 
-                                    if( objEmp.TransactionId==valuationModel.TransactionId)
+                                    if( objEmp.TransactionId==valuationModel.TransactionId && objEmp.TransactionType==valuationModel.TransactionType)
                                     {
-                                         _context.TestValuation.Add(objEmp);
-                                          await _context.SaveChangesAsync();
+                                        _context.TestValuation.Add(objEmp);
+                                        await _context.SaveChangesAsync();
                                     }
-                                    else
+                                     if(objEmp.TransactionId!=valuationModel.TransactionId)
                                     {
-                                    //   return NotFound("Please enter Valid TransactionId mapping & TransactionType for TransactionId : "+valuationModel.TransactionId+"");
-                                    //    string error = valuationModel.TransactionId + "Please enter Valid TransactionId mapping & TransactionType for TransactionId";
-                                    // return new ObjectResult(new error { Id = valuationModel.TransactionId, Name = "Please enter Valid TransactionId mapping & TransactionType for TransactionId" }) { StatusCode = 200 };
-
-                                    error.Insert(0, new KeyValuePair<string, string>( objEmp.TransactionId,"Please enter Valid TransactionId mapping & TransactionType for TransactionId"));
-
-                                   
+                                      mapMessage = objEmp.TransactionId +  " : Please enter Valid TransactionId mapping ";
+                                     
+                                    //   InsertLog( objEmp.TransactionId,count,  Totalcount,mapMessage,date);
                                     }
-
-
+                                     if(objEmp.TransactionType!=valuationModel.TransactionType)
+                                    {
+                                      typeMessage = objEmp.TransactionId + " : Please enter Correct TransactionType for TransactionId";
+                            
+                                        // InsertLog(objEmp.TransactionId, count, Totalcount,typeMessage,date);
+                                    }
+                                    if (mapMessage != null && typeMessage == null)
+                                        {
+                                            InsertLog(objEmp.TransactionId, count, Totalcount, mapMessage, date);
+                                        }
+                                        if (mapMessage == null && typeMessage != null)
+                                        {
+                                            InsertLog(objEmp.TransactionId, count, Totalcount, typeMessage, date);
+                                        }
+                                        if (mapMessage != null && typeMessage != null)
+                                        {
+                                            globalError = mapMessage + "," + typeMessage;
+                                            InsertLog(objEmp.TransactionId, count, Totalcount, globalError, date);
+                                        }
                                   
-                               
                                 }
 
                             }
@@ -722,7 +778,7 @@ namespace SBI_MF.Controllers
                 }
 
                 
-                return Ok(error);
+                return Ok();
             }
             catch (Exception)
             {
@@ -738,8 +794,6 @@ namespace SBI_MF.Controllers
 
         }
         
-
-
         // DELETE: api/Valuation/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<ValuationModel>> DeleteValuationModel(string id)
